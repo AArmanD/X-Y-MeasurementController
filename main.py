@@ -5,6 +5,7 @@ from tkinter import messagebox
 import time
 import matplotlib.pyplot as plt
 import pyvisa
+import config_window
 
 STAGES = ('L-406.20SD00')
 REFMODES = ['FNL']
@@ -25,7 +26,7 @@ class MeasureController(tk.Tk):
         
 
         fileMenu = tk.Menu(menubar, tearoff=False)
-        fileMenu.add_command(label="Import measuement configuration", underline=0, command=self.destroy)
+        fileMenu.add_command(label="Import measuement configuration", underline=0, command=self.OpenConfigWindow)
         fileMenu.add_command(label="Show measurement graph", underline=0, command=self.destroy)
         fileMenu.add_command(label="Exit", underline=0, command=self.destroy)
 
@@ -152,6 +153,10 @@ class MeasureController(tk.Tk):
 
         # prevent gui resize
         self.resizable(False, False)
+
+    def OpenConfigWindow(self):
+        configwindow = config_window.ConfigWindow(self)
+        configwindow.grab_set()
 
     def StartMeasurement(self):
         measurement_configuration = self.ReadConfiguration()
