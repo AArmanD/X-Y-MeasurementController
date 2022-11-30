@@ -19,6 +19,7 @@ REFMODES = ['FNL']
 # config import/export
 # requirements.txt
 # text attribut wird bei input gesetzt, länge davon abhängig
+# warten an position einstellbar
 
 def gesamtDurchlauf(eingabefeld, ausgabe_label):
     try:
