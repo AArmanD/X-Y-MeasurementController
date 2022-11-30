@@ -51,7 +51,7 @@ class MeasureController(tk.Tk):
         self.ausgabe_label1.grid(column=0, row=0, sticky="w")
         
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
         self.input_fields[0].grid(column=1, row=0, sticky="e")
     
         ausgabe_label2 = tk.Label(
@@ -61,7 +61,7 @@ class MeasureController(tk.Tk):
         )
         ausgabe_label2.grid(column=0, row=1, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
         self.input_fields[1].grid(column=1, row=1, sticky="e")
     
         ausgabe_label3 = tk.Label(
@@ -71,7 +71,7 @@ class MeasureController(tk.Tk):
         )
         ausgabe_label3.grid(column=0, row=2, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
         self.input_fields[2].grid(column=1, row=2, sticky="e")
     
         ausgabe_label4 = tk.Label(
@@ -81,7 +81,7 @@ class MeasureController(tk.Tk):
         )
         ausgabe_label4.grid(column=0, row=3, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
         self.input_fields[3].grid(column=1, row=3, sticky="e")
     
         ausgabe_label5 = tk.Label(
@@ -91,7 +91,7 @@ class MeasureController(tk.Tk):
         )
         ausgabe_label5.grid(column=0, row=4, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
         self.input_fields[4].grid(column=1, row=4, sticky="e")
     
         ausgabe_label6 = tk.Label(
@@ -101,7 +101,7 @@ class MeasureController(tk.Tk):
         )
         ausgabe_label6.grid(column=0, row=5, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
         self.input_fields[5].grid(column=1, row=5, sticky="e")
     
         ausgabe_label7 = tk.Label(
@@ -111,7 +111,7 @@ class MeasureController(tk.Tk):
         )
         ausgabe_label7.grid(column=0, row=6, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
         self.input_fields[6].grid(column=1, row=6, sticky="e")
     
         ausgabe_label8 = tk.Label(
@@ -121,7 +121,7 @@ class MeasureController(tk.Tk):
         )
         ausgabe_label8.grid(column=0, row=7, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
         self.input_fields[7].grid(column=1, row=7, sticky="e")
     
         ausgabe_label9 = tk.Label(
@@ -131,7 +131,7 @@ class MeasureController(tk.Tk):
         )
         ausgabe_label9.grid(column=0, row=8, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
         self.input_fields[8].grid(column=1, row=8, sticky="e")
 
     
