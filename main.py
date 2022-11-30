@@ -17,11 +17,26 @@ class MeasureController(tk.Tk):
         super().__init__()
 
         self.title("X-Y Messprogramm")
-        # self["background"] = "white"
 
+        
+        # create menu bar
+        menubar = tk.Menu(self)
+        self.config(menu=menubar)
+        
+
+        fileMenu = tk.Menu(menubar, tearoff=False)
+        fileMenu.add_command(label="Import measuement configuration", underline=0, command=self.destroy)
+        fileMenu.add_command(label="Show measurement graph", underline=0, command=self.destroy)
+        fileMenu.add_command(label="Exit", underline=0, command=self.destroy)
+
+        menubar.add_cascade(label="Options", underline=0, menu=fileMenu)
+        
+
+        # add icon
         photo = tk.PhotoImage(file = 'icon.png')
         self.wm_iconphoto(False, photo)
     
+        # create field for storing input variables
         self.input_fields = []
 
         # configure grid
@@ -135,7 +150,7 @@ class MeasureController(tk.Tk):
         #     command=self.destroy
         # ).grid(column=1, row=9)
 
-
+        # prevent gui resize
         self.resizable(False, False)
 
     def StartMeasurement(self):
