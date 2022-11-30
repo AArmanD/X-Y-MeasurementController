@@ -16,150 +16,127 @@ class MeasureController(tk.Tk):
 
         super().__init__()
 
-        title = "Werte für den Verschiebetisch eintragen"
-        self.title(title)
-        self["background"] = "white"
+        self.title("X-Y Messprogramm")
+        # self["background"] = "white"
+
+        photo = tk.PhotoImage(file = 'icon.png')
+        self.wm_iconphoto(False, photo)
     
         self.input_fields = []
 
+        # configure grid
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=3)
+    
+        self.ausgabe_label1 = tk.Label(
+            self,
+            text="Umrechnungsfaktor von Spannung in Leistung:",
+            font=("Arial", 10),
+        )
+        self.ausgabe_label1.grid(column=0, row=0, sticky="w")
+        
 
-        tk.Label(
-            self,
-            text=title,
-            bg="black",
-            fg="white",
-            font=("Arial", 12),
-        ).pack(fill="both")
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields[0].grid(column=1, row=0, sticky="e")
     
-        self.ausgabe_label2 = tk.Label(
+        ausgabe_label2 = tk.Label(
             self,
-            text="Umrechnungsfaktor von Spannung in Leistung",
-            bg="white",
-            fg="black",
+            text="Anzahl der Messdurchläufe:",
             font=("Arial", 10),
         )
-        self.ausgabe_label2.pack()
-        
-        text = "Umrechnungsfaktor von Spannung in Leistung"
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
-        self.input_fields[0].pack(fill="both")
-    
-        ausgabe_label1 = tk.Label(
-            self,
-            text="Anzahl der Messdurchläufe",
-            bg="white",
-            fg="black",
-            font=("Arial", 10),
-        )
-        
-        ausgabe_label1.pack()
-        text = "Anzahl der Messdurchläufe "
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
-        self.input_fields[1].pack(fill="both")
+        ausgabe_label2.grid(column=0, row=1, sticky="w")
+
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields[1].grid(column=1, row=1, sticky="e")
     
         ausgabe_label3 = tk.Label(
             self,
-            text="Anzahl der Messungen an einer Position",
-            bg="white",
-            fg="black",
+            text="Anzahl der Messungen an einer Position:",
             font=("Arial", 10),
-    
         )
-        ausgabe_label3.pack()
-        text = "Anzahl der Messungen an einer Position"
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
-        self.input_fields[2].pack(fill="both")
+        ausgabe_label3.grid(column=0, row=2, sticky="w")
+
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields[2].grid(column=1, row=2, sticky="e")
     
         ausgabe_label4 = tk.Label(
             self,
-            text="X-Startwert in mm",
-            bg="white",
-            fg="black",
+            text="X-Startwert in mm:",
             font=("Arial", 10),
         )
-        ausgabe_label4.pack()
+        ausgabe_label4.grid(column=0, row=3, sticky="w")
 
-        text = "X-Startwert in mm"
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
-        self.input_fields[3].pack(fill="both")
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields[3].grid(column=1, row=3, sticky="e")
     
         ausgabe_label5 = tk.Label(
             self,
-            text="Y-Startwert in mm",
-            bg="white",
-            fg="black",
+            text="Y-Startwert in mm:",
             font=("Arial", 10),
         )
-        ausgabe_label5.pack()
+        ausgabe_label5.grid(column=0, row=4, sticky="w")
 
-        text = "Y-Startwert"
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
-        self.input_fields[4].pack(fill="both")
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields[4].grid(column=1, row=4, sticky="e")
     
         ausgabe_label6 = tk.Label(
             self,
-            text="X-Endwert in mm",
-            bg="white",
-            fg="black",
+            text="X-Endwert in mm:",
             font=("Arial", 10),
         )
-        ausgabe_label6.pack()
-        text = "X-Endwert in mm"
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
-        self.input_fields[5].pack(fill="both")
+        ausgabe_label6.grid(column=0, row=5, sticky="w")
+
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields[5].grid(column=1, row=5, sticky="e")
     
         ausgabe_label7 = tk.Label(
             self,
-            text="Y-Endwert in mm",
-            bg="white",
-            fg="black",
+            text="Y-Endwert in mm:",
             font=("Arial", 10),
         )
-        ausgabe_label7.pack()
-        text = "Y-Endwert"
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
-        self.input_fields[6].pack(fill="both")
+        ausgabe_label7.grid(column=0, row=6, sticky="w")
+
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields[6].grid(column=1, row=6, sticky="e")
     
         ausgabe_label8 = tk.Label(
             self,
-            text="Delta X-Wert in mm",
-            bg="white",
-            fg="black",
+            text="Delta X-Wert in mm:",
             font=("Arial", 10),
         )
-        ausgabe_label8.pack()
-        text = "Delta X-Wert in mm"
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
-        self.input_fields[7].pack(fill="both")
+        ausgabe_label8.grid(column=0, row=7, sticky="w")
+
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields[7].grid(column=1, row=7, sticky="e")
     
         ausgabe_label9 = tk.Label(
             self,
-            text="Delta Y-Wert in mm",
-            bg="white",
-            fg="black",
+            text="Delta Y-Wert in mm:",
             font=("Arial", 10),
         )
-        ausgabe_label9.pack()
-        text = "Delta Y-Wert in mm"
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
-        self.input_fields[8].pack(fill="both")
+        ausgabe_label9.grid(column=0, row=8, sticky="w")
+
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10))
+        self.input_fields[8].grid(column=1, row=8, sticky="e")
 
     
         tk.Button(
             self,
             text="Messung starten",
             font=("Arial", 10),
-            bg="red",
             command=self.StartMeasurement,
-        ).pack(side="right", padx=10, pady=10)
+        ).grid(column=0, row=11, columnspan=2, pady=15)
     
-        tk.Button(
-            self,
-            text="Messung stoppen",
-            font=("Arial", 10),
-            bg="red",
-            command=self.destroy
-        ).pack(side="left", padx=10, pady=10)
+        # tk.Button(
+        #     self,
+        #     text="Messung stoppen",
+        #     font=("Arial", 10),
+        #     bg="red",
+        #     command=self.destroy
+        # ).grid(column=1, row=9)
+
+
+        self.resizable(False, False)
 
     def StartMeasurement(self):
         measurement_configuration = self.ReadConfiguration()

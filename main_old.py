@@ -18,6 +18,7 @@ REFMODES = ['FNL']
 # logger einbauen
 # config import/export
 # requirements.txt
+# text attribut wird bei input gesetzt, länge davon abhängig
 
 def gesamtDurchlauf(eingabefeld, ausgabe_label):
     try:
