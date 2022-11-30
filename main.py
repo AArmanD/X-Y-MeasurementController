@@ -6,41 +6,33 @@ import time
 import matplotlib.pyplot as plt
 import pyvisa
 
-import config_window
-
 STAGES = ('L-406.20SD00')
 REFMODES = ['FNL']
 
-class MeasureController():
-    """
-    This class greates the main interface for interaction with the labotary setup.
-    """
-
-    def __init__(self,root):
+class MeasureController(tk.Tk):
+    def __init__(self):
         """This class initializes the configuration window for the measurement
         """
-        self.root = root
 
-        #super().__init__()
+        super().__init__()
 
         title = "Werte für den Verschiebetisch eintragen"
-        self.root.title(title)
-        self.root["background"] = "white"
+        self.title(title)
+        self["background"] = "white"
     
         self.input_fields = []
 
 
         tk.Label(
-            self.root,
+            self,
             text=title,
             bg="black",
             fg="white",
             font=("Arial", 12),
         ).pack(fill="both")
-
-          
+    
         self.ausgabe_label2 = tk.Label(
-            self.root,
+            self,
             text="Umrechnungsfaktor von Spannung in Leistung",
             bg="white",
             fg="black",
@@ -48,13 +40,12 @@ class MeasureController():
         )
         self.ausgabe_label2.pack()
         
- 
         text = "Umrechnungsfaktor von Spannung in Leistung"
-        self.input_fields.append(tk.Entry(self.root, font=("Arial", 10), width=len(text), text=text))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
         self.input_fields[0].pack(fill="both")
     
         ausgabe_label1 = tk.Label(
-            self.root,
+            self,
             text="Anzahl der Messdurchläufe",
             bg="white",
             fg="black",
@@ -63,11 +54,11 @@ class MeasureController():
         
         ausgabe_label1.pack()
         text = "Anzahl der Messdurchläufe "
-        self.input_fields.append(tk.Entry(self.root, font=("Arial", 10), width=len(text), text=text))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
         self.input_fields[1].pack(fill="both")
     
         ausgabe_label3 = tk.Label(
-            self.root,
+            self,
             text="Anzahl der Messungen an einer Position",
             bg="white",
             fg="black",
@@ -76,11 +67,11 @@ class MeasureController():
         )
         ausgabe_label3.pack()
         text = "Anzahl der Messungen an einer Position"
-        self.input_fields.append(tk.Entry(self.root, font=("Arial", 10), width=len(text), text=text))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
         self.input_fields[2].pack(fill="both")
     
         ausgabe_label4 = tk.Label(
-            self.root,
+            self,
             text="X-Startwert in mm",
             bg="white",
             fg="black",
@@ -89,11 +80,11 @@ class MeasureController():
         ausgabe_label4.pack()
 
         text = "X-Startwert in mm"
-        self.input_fields.append(tk.Entry(self.root, font=("Arial", 10), width=len(text), text=text))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
         self.input_fields[3].pack(fill="both")
     
         ausgabe_label5 = tk.Label(
-            self.root,
+            self,
             text="Y-Startwert in mm",
             bg="white",
             fg="black",
@@ -102,11 +93,11 @@ class MeasureController():
         ausgabe_label5.pack()
 
         text = "Y-Startwert"
-        self.input_fields.append(tk.Entry(self.root, font=("Arial", 10), width=len(text), text=text))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
         self.input_fields[4].pack(fill="both")
     
         ausgabe_label6 = tk.Label(
-            self.root,
+            self,
             text="X-Endwert in mm",
             bg="white",
             fg="black",
@@ -114,11 +105,11 @@ class MeasureController():
         )
         ausgabe_label6.pack()
         text = "X-Endwert in mm"
-        self.input_fields.append(tk.Entry(self.root, font=("Arial", 10), width=len(text), text=text))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
         self.input_fields[5].pack(fill="both")
     
         ausgabe_label7 = tk.Label(
-            self.root,
+            self,
             text="Y-Endwert in mm",
             bg="white",
             fg="black",
@@ -126,11 +117,11 @@ class MeasureController():
         )
         ausgabe_label7.pack()
         text = "Y-Endwert"
-        self.input_fields.append(tk.Entry(self.root, font=("Arial", 10), width=len(text), text=text))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
         self.input_fields[6].pack(fill="both")
     
         ausgabe_label8 = tk.Label(
-            self.root,
+            self,
             text="Delta X-Wert in mm",
             bg="white",
             fg="black",
@@ -138,11 +129,11 @@ class MeasureController():
         )
         ausgabe_label8.pack()
         text = "Delta X-Wert in mm"
-        self.input_fields.append(tk.Entry(self.root, font=("Arial", 10), width=len(text), text=text))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
         self.input_fields[7].pack(fill="both")
     
         ausgabe_label9 = tk.Label(
-            self.root,
+            self,
             text="Delta Y-Wert in mm",
             bg="white",
             fg="black",
@@ -150,12 +141,12 @@ class MeasureController():
         )
         ausgabe_label9.pack()
         text = "Delta Y-Wert in mm"
-        self.input_fields.append(tk.Entry(self.root, font=("Arial", 10), width=len(text), text=text))
+        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=len(text), text=text))
         self.input_fields[8].pack(fill="both")
 
     
         tk.Button(
-            self.root,
+            self,
             text="Messung starten",
             font=("Arial", 10),
             bg="red",
@@ -163,14 +154,12 @@ class MeasureController():
         ).pack(side="right", padx=10, pady=10)
     
         tk.Button(
-            self.root,
+            self,
             text="Messung stoppen",
             font=("Arial", 10),
             bg="red",
-            command=self.root.destroy
+            command=self.destroy
         ).pack(side="left", padx=10, pady=10)
-
-        self.root.mainloop()
 
     def StartMeasurement(self):
         measurement_configuration = self.ReadConfiguration()
@@ -284,9 +273,6 @@ class MeasureController():
                     print("Diagramm öffnen")
                     Diagramm(Y_Werte, X_Werte, Messwerte)
 
-
-##########################################################################
-
 def Messgeraet(**measurement_configuration):
     rm = pyvisa.ResourceManager()
     Messinstrument = rm.open_resource('TCPIP0::141.47.75.77::inst0::INSTR')
@@ -312,8 +298,5 @@ def Diagramm(Y_Werte, X_Werte, Messwerte):
     plt.show()
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    measure_controller = MeasureController(root)
-    configwindow = config_window.ConfigLoad(root)
-
-    
+    measure_controller = MeasureController()
+    measure_controller.mainloop()
