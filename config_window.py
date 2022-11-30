@@ -10,12 +10,16 @@ class ConfigWindow(tk.Toplevel):
         self.geometry('450x350')
         self.title('Konfigurations Menü')
 
-        openbutton = tk.Button(
-                self,
-                text="Konfiguration Laden",
-                font=("Arial", 10),
-                command=self.openfile,
-            ).pack()
+        self.configloadbutton = tk.Button(
+            self,
+            text="Konfiguration Laden",
+            font=("Arial", 10),
+            command=self.openfile,
+        ).pack()
+
+        self.entryfield = tk.Entry(
+            self,
+        )
 
     def openfile(self):
         filepath = filedialog.askopenfilename(
