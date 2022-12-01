@@ -21,6 +21,10 @@ class ConfigWindow(tk.Toplevel):
             self,
         )
 
+        # insert some sample content for testing purposes
+        parent.input_fields[0].delete(0,tk.END)
+        parent.input_fields[0].insert(0, "125")
+
     def openfile(self):
         filepath = filedialog.askopenfilename(
             title='Datei öffnen',
