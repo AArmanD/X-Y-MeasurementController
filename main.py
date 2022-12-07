@@ -170,15 +170,15 @@ class StartWindow(tk.Tk):
         measurement_configuration = dict()
 
         try:
-            measurement_configuration["conversion_factor"] = int(self.input_fields[0].get())
-            measurement_configuration["number_of_measurement_runs"] = int(self.input_fields[1].get())
-            measurement_configuration["number_of_measurements_in_one_position"] = int(self.input_fields[2].get())
-            measurement_configuration["x_start_value"] = int(self.input_fields[3].get())
-            measurement_configuration["y_start_value"] = int(self.input_fields[4].get())
-            measurement_configuration["x_end_value"] = int(self.input_fields[5].get())
-            measurement_configuration["y_end_value"] = int(self.input_fields[6].get())
-            measurement_configuration["delta_x_value"] = float(self.input_fields[7].get())
-            measurement_configuration["delta_y_value"] = float(self.input_fields[8].get())
+            measurement_configuration["conversion_factor"] = int(self.input_fields["conversion_factor"].get())
+            measurement_configuration["number_of_measurement_runs"] = int(self.input_fields["number_of_measurement_runs"].get())
+            measurement_configuration["number_of_measurements_in_one_position"] = int(self.input_fields["number_of_measurements_in_one_position"].get())
+            measurement_configuration["x_start_value"] = int(self.input_fields["x_start_value"].get())
+            measurement_configuration["y_start_value"] = int(self.input_fields["y_start_value"].get())
+            measurement_configuration["x_end_value"] = int(self.input_fields["x_end_value"].get())
+            measurement_configuration["y_end_value"] = int(self.input_fields["y_end_value"].get())
+            measurement_configuration["delta_x_value"] = float(self.input_fields["delta_x_value"].get())
+            measurement_configuration["delta_y_value"] = float(self.input_fields["delta_y_value"].get())
 
         except ValueError:
             messagebox.showerror("Title", "Error in reading in configuration")
