@@ -33,7 +33,7 @@ class StartWindow(tk.Tk):
         self.wm_iconphoto(False, photo)
     
         # create field for storing input variables
-        self.input_fields = []
+        self.input_fields = dict()
 
         # configure grid
         self.columnconfigure(0, weight=1)
@@ -47,8 +47,8 @@ class StartWindow(tk.Tk):
         self.ausgabe_label1.grid(column=0, row=0, sticky="w")
         
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
-        self.input_fields[0].grid(column=1, row=0, sticky="e")
+        self.input_fields["conversion_factor"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
+        self.input_fields["conversion_factor"].grid(column=1, row=0, sticky="e")
     
         ausgabe_label2 = tk.Label(
             self,
@@ -57,8 +57,8 @@ class StartWindow(tk.Tk):
         )
         ausgabe_label2.grid(column=0, row=1, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
-        self.input_fields[1].grid(column=1, row=1, sticky="e")
+        self.input_fields["number_of_measurement_runs"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
+        self.input_fields["number_of_measurement_runs"].grid(column=1, row=1, sticky="e")
     
         ausgabe_label3 = tk.Label(
             self,
@@ -67,8 +67,8 @@ class StartWindow(tk.Tk):
         )
         ausgabe_label3.grid(column=0, row=2, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
-        self.input_fields[2].grid(column=1, row=2, sticky="e")
+        self.input_fields["number_of_measurements_in_one_position"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
+        self.input_fields["number_of_measurements_in_one_position"].grid(column=1, row=2, sticky="e")
     
         ausgabe_label4 = tk.Label(
             self,
@@ -77,8 +77,8 @@ class StartWindow(tk.Tk):
         )
         ausgabe_label4.grid(column=0, row=3, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
-        self.input_fields[3].grid(column=1, row=3, sticky="e")
+        self.input_fields["x_start_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
+        self.input_fields["x_start_value"].grid(column=1, row=3, sticky="e")
     
         ausgabe_label5 = tk.Label(
             self,
@@ -87,8 +87,8 @@ class StartWindow(tk.Tk):
         )
         ausgabe_label5.grid(column=0, row=4, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
-        self.input_fields[4].grid(column=1, row=4, sticky="e")
+        self.input_fields["y_start_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
+        self.input_fields["y_start_value"].grid(column=1, row=4, sticky="e")
     
         ausgabe_label6 = tk.Label(
             self,
@@ -97,8 +97,8 @@ class StartWindow(tk.Tk):
         )
         ausgabe_label6.grid(column=0, row=5, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
-        self.input_fields[5].grid(column=1, row=5, sticky="e")
+        self.input_fields["x_end_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
+        self.input_fields["x_end_value"].grid(column=1, row=5, sticky="e")
     
         ausgabe_label7 = tk.Label(
             self,
@@ -107,8 +107,8 @@ class StartWindow(tk.Tk):
         )
         ausgabe_label7.grid(column=0, row=6, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
-        self.input_fields[6].grid(column=1, row=6, sticky="e")
+        self.input_fields["y_end_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
+        self.input_fields["y_end_value"].grid(column=1, row=6, sticky="e")
     
         ausgabe_label8 = tk.Label(
             self,
@@ -117,8 +117,8 @@ class StartWindow(tk.Tk):
         )
         ausgabe_label8.grid(column=0, row=7, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
-        self.input_fields[7].grid(column=1, row=7, sticky="e")
+        self.input_fields["delta_x_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
+        self.input_fields["delta_x_value"].grid(column=1, row=7, sticky="e")
     
         ausgabe_label9 = tk.Label(
             self,
@@ -127,8 +127,8 @@ class StartWindow(tk.Tk):
         )
         ausgabe_label9.grid(column=0, row=8, sticky="w")
 
-        self.input_fields.append(tk.Entry(self, font=("Arial", 10), width=10, justify="right"))
-        self.input_fields[8].grid(column=1, row=8, sticky="e")
+        self.input_fields["delta_y_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
+        self.input_fields["delta_y_value"].grid(column=1, row=8, sticky="e")
 
     
         tk.Button(
