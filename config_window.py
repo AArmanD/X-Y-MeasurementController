@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
-import csv
+import pandas
 
 class ConfigWindow(tk.Toplevel):
     def __init__(self, parent):
@@ -14,30 +14,31 @@ class ConfigWindow(tk.Toplevel):
             self,
             text="Konfiguration Laden",
             font=("Arial", 10),
-            command=self.openfile,
+            command=lambda: self.openfile(parent),
         ).pack()
 
         self.entryfield = tk.Entry(
             self,
         )
 
-        # insert some sample content for testing purposes
-        parent.input_fields[0].delete(0,tk.END)
-        parent.input_fields[0].insert(0, "125")
 
-    def openfile(self):
+    def openfile(self,parent):
         filepath = filedialog.askopenfilename(
             title='Datei öffnen',
             initialdir='C:/Users/Lukas/Documents/Git/X-Y-MeasurementController',
             filetypes=(('Konfigurations Datei','*.csv'),('Alle Formate','*.*'))
-
         )
 
-        with open(filepath) as csv_file:
-            csvFile = csv.DictReader(csv_file)
-    
-            for row in csvFile:
-                print(row)
+        df = pandas.read_csv(filepath, header=None, index_col=0).squeeze("columns")
+        config = df.to_dict()
+        configkeys = config.keys()
+       
+        for key in configkeys:
+            # Load the config into input fields
+            parent.input_fields[key].delete(0,tk.END)
+            parent.input_fields[key].insert(0, config[key])
+
+            
 
 
 if __name__ == "__main__":
