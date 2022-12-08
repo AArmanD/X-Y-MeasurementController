@@ -1,0 +1,42 @@
+# todo: werte speichern button speichern nichts, eliminieren
+# todo: Einheitliche einlesefunktion
+
+
+# config import/export
+# requirements.txt
+# text attribut wird bei input gesetzt, länge davon abhängig
+# warten an position einstellbar
+
+Probleme in der alten version
+
+auslesen der Textfelder erst bei bearbeitung einzelne speicher button unnötig
+speicherknöpfe funktionieren eh nicht siehe nächster punkt
+
+katastrophale variablen naming
+Anzahl_x int konversionen
+
+verwendung von Partial eigentlich nicht notwendig
+
+measurementcontroller 
+    textfile wird überschrieben
+
+    Folgefehler amk?:
+        Zeile 
+        nextxposition = currentxposition + measurement_configuration["delta_x_value"]
+        nextxposition = (currentxstep * measurement_configuration["delta_x_value"])  + measurement_configuration["delta_x_value"]
+
+    nach letzer messung moved die achse nochmal mit if schleife nicht
+        # as long as not last measurement
+        # saves 5seconds + movements per time
+        # e.g 500 rows a 5 seconds => * 40min
+
+
+Changelog
+alle speicher knöpfe entfernt
+config in export
+
+measurementcontroller:
+    for axis schleifen weg
+    initilal positionen mit wait position
+
+    messwert speicherung als tuples und einzlene text dateien
