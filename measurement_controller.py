@@ -23,6 +23,10 @@ class MeasurementController(tk.Toplevel):
 
         self.geometry('300x120')
 
+        # add icon
+        photo = tk.PhotoImage(file = 'icon.png')
+        self.wm_iconphoto(False, photo)
+
         self.grid()
 
         # progressbar
@@ -47,6 +51,9 @@ class MeasurementController(tk.Toplevel):
             command=self.pb.stop
         )
         stop_button.grid(column=1, row=2, padx=10, pady=10, sticky=tk.W)
+
+        # prevent window to be resizable
+        self.resizable(False, False)
 
         # create and start measure thread
         #self.main_thread = Thread(target=self.measurement_controller, daemon=True, args=[measurement_configuration])
