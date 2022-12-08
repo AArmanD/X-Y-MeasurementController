@@ -11,6 +11,9 @@ import pandas as pd
 
 from threading import Thread
 
+
+_logger = logging.getLogger(__name__)
+
 STAGES = ('L-406.20SD00')
 REFMODES = ['FNL']
 
@@ -58,8 +61,8 @@ class MeasurementController(tk.Toplevel):
         self.resizable(False, False)
 
         # create and start measure thread
-        #self.main_thread = Thread(target=self.measurement_controller, daemon=True, args=[measurement_configuration])
-        self.main_thread = Thread(target=lambda: self.measurement_controller(**measurement_configuration))
+        self.main_thread = Thread(target=self.test_progress_bar, daemon=True)
+        #self.main_thread = Thread(target=lambda: self.measurement_controller(**measurement_configuration))
         self.main_thread.start()
 
         self.mainloop()
@@ -67,8 +70,8 @@ class MeasurementController(tk.Toplevel):
     def update_progress_label(self):
         return f"Current Progress: {self.pb['value']}%"
 
-    def test_progress_bar(self, measurement_configuration):
-        logging.info("in_test_progress_bar")
+    def test_progress_bar(self):
+        _logger.info("in_test_progress_bar")
 
         for i in range(0,100):
             time.sleep(1)
@@ -99,30 +102,30 @@ class MeasurementController(tk.Toplevel):
             Device1.OpenUSBDaisyChain(description='0017550026')
             daisychainid = Device1.dcid
             Device1.ConnectDaisyChainDevice(1, daisychainid)
-            logging.info('Master DaisyChain-Verbindung ist aufgebaut')
+            _logger.info('Master DaisyChain-Verbindung ist aufgebaut')
             
             # Secondly enable connection to the next device in daisy chain
             with GCSDevice() as Device2:
                 Device2.ConnectDaisyChainDevice(2, daisychainid)
                 
                 # A lot of initializing information
-                logging.info("Gefundene Devices mit IDs")
-                logging.info('\n{}:\n{}'.format(Device1.GetInterfaceDescription(), Device1.qIDN()))
-                logging.info('\n{}:\n{}'.format(Device2.GetInterfaceDescription(), Device2.qIDN()))
+                _logger.info("Gefundene Devices mit IDs")
+                _logger.info('\n{}:\n{}'.format(Device1.GetInterfaceDescription(), Device1.qIDN()))
+                _logger.info('\n{}:\n{}'.format(Device2.GetInterfaceDescription(), Device2.qIDN()))
 
-                logging.info('DaisyChain-Verbindung ist aufgebaut')
+                _logger.info('DaisyChain-Verbindung ist aufgebaut')
 
-                logging.info('Inialisierung Achsen...')
+                _logger.info('Inialisierung Achsen...')
                 pitools.startup(Device1, stages=STAGES, refmodes=REFMODES)
                 pitools.startup(Device2, stages=STAGES, refmodes=REFMODES)
 
-                logging.info('Min Achse 1:', Device1.qTMN())
-                logging.info('Max Achse 1:', Device1.qTMX())
-                logging.info('Aktuelle Position Achse 2:', Device1.qPOS())
+                _logger.info('Min Achse 1:', Device1.qTMN())
+                _logger.info('Max Achse 1:', Device1.qTMX())
+                _logger.info('Aktuelle Position Achse 2:', Device1.qPOS())
 
-                logging.info('Min Achse 2:', Device2.qTMN())
-                logging.info('Max Achse 2:', Device2.qTMX())
-                logging.info('Aktuelle Position Achse 2:', Device2.qPOS())
+                _logger.info('Min Achse 2:', Device2.qTMN())
+                _logger.info('Max Achse 2:', Device2.qTMX())
+                _logger.info('Aktuelle Position Achse 2:', Device2.qPOS())
 
                 # todo solve below
                 for axis in Device2.axes:
@@ -146,9 +149,9 @@ class MeasurementController(tk.Toplevel):
                     time.sleep(5)       # timer to wait so the table doesnt shake anymore
 
                     currentyposition = Device1.qPOS(axis1)[axis1]
-                    logging.info('Current position of y axis is {:.2f}'.format(currentyposition))
+                    _logger.info('Current position of y axis is {:.2f}'.format(currentyposition))
                     currentxposition = Device2.qPOS(axis2)[axis2]
-                    logging.info('Aktuelle Position der Achse 2 ist {:.2f}'.format(currentxposition))
+                    _logger.info('Aktuelle Position der Achse 2 ist {:.2f}'.format(currentxposition))
 
                     # cycle through the amount of meassurement points on the y axis
                     meassurementcounter = 0
@@ -203,13 +206,13 @@ class MeasurementController(tk.Toplevel):
                     df = pd.DataFrame({"xpos" : xpositionvalues, "ypos" : ypositionvalues, "measure" : measurements})
                     df.to_csv(f"Measuremntrun {i}.csv", index=False)
 
-                logging.info("Return to start position")
+                _logger.info("Return to start position")
                 Device1.MOV(axis1, measurement_configuration["y_start_value"])
                 Device2.MOV(axis2, measurement_configuration["x_start_value"])
                 pitools.waitontarget(Device1, axes=axis1)
                 pitools.waitontarget(Device2, axes=axis2)
             
-            logging.info("Verbindung schließen")
+            _logger.info("Verbindung schließen")
             Device2.CloseDaisyChain()
             Device1.CloseDaisyChain()
 
