@@ -5,6 +5,9 @@ from pipython import GCSDevice, pitools
 import time
 import numpy as np
 from pipython import GCSDevice, pitools
+import math
+
+from threading import Thread
 
 STAGES = ('L-406.20SD00')
 REFMODES = ['FNL']
@@ -12,7 +15,7 @@ REFMODES = ['FNL']
 class MeasurementController(tk.Toplevel):
 
 
-    def __init__(self, parent):
+    def __init__(self, parent, **measurement_configuration):
 
         super().__init__(parent)
 
@@ -37,14 +40,6 @@ class MeasurementController(tk.Toplevel):
         self.value_label = ttk.Label(self, text=self.update_progress_label())
         self.value_label.grid(column=0, row=1, columnspan=2)
 
-        # start button
-        start_button = ttk.Button(
-            self,
-            text='Start',
-            command=self.progress
-        )
-        start_button.grid(column=0, row=2, padx=10, pady=10, sticky=tk.E)
-
         # stop button
         stop_button = ttk.Button(
             self,
@@ -53,27 +48,36 @@ class MeasurementController(tk.Toplevel):
         )
         stop_button.grid(column=1, row=2, padx=10, pady=10, sticky=tk.W)
 
+        # create and start measure thread
+        #self.main_thread = Thread(target=self.measurement_controller, daemon=True, args=[measurement_configuration])
+        self.main_thread = Thread(target=lambda: self.measurement_controller(**measurement_configuration))
+        self.main_thread.start()
 
         self.mainloop()
 
     def update_progress_label(self):
         return f"Current Progress: {self.pb['value']}%"
 
-    def progress(self):
-        if self.pb['value'] < 100:
-            self.pb['value'] += 20
+    def test_progress_bar(self, measurement_configuration):
+        print("in_test_progress_bar")
+
+        for i in range(0,100):
+            time.sleep(1)
+            self.pb['value'] = i
             self.value_label['text'] = self.update_progress_label()
 
 
     def measurement_controller(self, **measurement_configuration):
     
-
         Anzahl_Y = (measurement_configuration["y_end_value"] - measurement_configuration["y_start_value"]) / measurement_configuration["delta_y_value"]
         Anzahl_X = (measurement_configuration["x_end_value"] - measurement_configuration["x_start_value"]) / measurement_configuration["delta_x_value"]
 
         X_Werte = np.zeros((int(Anzahl_Y), int(Anzahl_X)), dtype=float)
         Y_Werte = np.zeros((int(Anzahl_Y), int(Anzahl_X)), dtype=float)
         Messwerte = np.zeros((int(Anzahl_Y), int(Anzahl_X)), dtype=float)
+
+        stepsize = 100/(Anzahl_X*Anzahl_Y*measurement_configuration["number_of_measurement_runs"])
+        progress = 0
 
         """Verbinden der Controller über DaisyChain"""
         with GCSDevice() as Device1:
@@ -123,10 +127,16 @@ class MeasurementController(tk.Toplevel):
                                     position2 = Device2.qPOS(axis)[axis]
                                     print('Aktuelle Position der Achse 2 ist {:.2f}'.format(position2))
 
-                                    Messwerte[target1, target2] = Messgeraet(measurement_configuration)
+                                    Messwerte[target1, target2] = self.make_measurement(measurement_configuration)
                                     X_Werte[target1, target2] = position2
                                     Y_Werte[target1, target2] = position1
                                     Device2.MOV(axis, (position2 + measurement_configuration["delta_x_value"]))
+
+                                    # update progress bar
+                                    progress = progress + stepsize
+                                    self.pb['value'] = math.ceil(progress)
+                                    self.value_label['text'] = self.update_progress_label()
+
 
                                 time.sleep(2)
 

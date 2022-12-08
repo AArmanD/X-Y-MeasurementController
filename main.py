@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import filedialog
 import matplotlib.pyplot as plt
+import json
 
-import config_window
 import measurement_controller
 
 class StartWindow(tk.Tk):
@@ -21,7 +22,8 @@ class StartWindow(tk.Tk):
         
 
         fileMenu = tk.Menu(menubar, tearoff=False)
-        fileMenu.add_command(label="Import measuement configuration", underline=0, command=self.OpenConfigWindow)
+        fileMenu.add_command(label="Import measuement configuration", underline=0, command=self.read_configuration_from_json)
+        fileMenu.add_command(label="Export measurement configuration", underline=0, command=self.write_configuration_to_json)
         fileMenu.add_command(label="Show measurement graph", underline=0, command=self.destroy)
         fileMenu.add_command(label="Exit", underline=0, command=self.destroy)
 
@@ -135,7 +137,7 @@ class StartWindow(tk.Tk):
             self,
             text="Messung starten",
             font=("Arial", 10),
-            command=self.StartMeasurement,
+            command=self.start_measurement,
         ).grid(column=0, row=11, columnspan=2, pady=15)
     
         # tk.Button(
@@ -149,22 +151,14 @@ class StartWindow(tk.Tk):
         # prevent gui resize
         self.resizable(False, False)
 
-    def OpenConfigWindow(self):
-        configwindow = config_window.ConfigWindow(self)
-        configwindow.grab_set()
+    def start_measurement(self):
+        measurement_configuration = self.read_configuration()
 
-    def StartMeasurement(self):
-        measurement_configuration = self.ReadConfiguration()
-
-        measure_controller = measurement_controller.MeasurementController(self)
-
-        measure_controller.measurement_controller()
-
-        #self.MeasurementController(measurement_configuration)
+        measurement_controller.MeasurementController(self, **measurement_configuration)
 
 
-    def ReadConfiguration(self):
-        """This function reads in the entered configuration for the measurement
+    def read_configuration(self):
+        """This function reads in the entered configuration from the input fields
         """
 
         measurement_configuration = dict()
@@ -184,6 +178,43 @@ class StartWindow(tk.Tk):
             messagebox.showerror("Title", "Error in reading in configuration")
         
         # todo auf Wertebereiche prüfen
+
+        return measurement_configuration
+
+    def read_configuration_from_json(self):
+        filepath = filedialog.askopenfilename(
+            title='Datei öffnen',
+            filetypes=(('Konfigurations Datei','*.json'),('Alle Formate','*.*'))
+        )
+
+        config = dict()
+
+        with open(filepath, mode='r') as json_file:
+            config = json.load(json_file)
+
+        for key in config:
+
+            # Load the config into input fields
+            self.input_fields[key].delete(0,tk.END)
+            self.input_fields[key].insert(0, config[key])
+        
+    def write_configuration_to_json(self):
+
+        measurement_configuration = self.read_configuration()
+
+        if(not measurement_configuration):
+            return
+
+        file = filedialog.asksaveasfile(mode='w', defaultextension=".json", filetypes=(('Konfigurations Datei','*.json'),('Alle Formate','*.*')))
+        
+        # return if file dialog was closed with "cancel"
+        if file is None:
+            return
+
+        json.dump(measurement_configuration, file)
+
+        file.close()
+
 
 def Diagramm(Y_Werte, X_Werte, Messwerte):
     #fig = plt.figure()
