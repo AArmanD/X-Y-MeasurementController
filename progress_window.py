@@ -51,14 +51,14 @@ class ProgressWindow(tk.Toplevel):
         self.progress_bar.grid(column=0, row=0, columnspan=2, padx=10, pady=20)
 
         # define and place label which shows progress
-        self.value_label = ttk.Label(self, text=self.update_progress_label())
+        self.value_label = ttk.Label(self, text=self._update_progress_label())
         self.value_label.grid(column=0, row=1, columnspan=2)
 
         # define and place label which stops measurement
         stop_button = ttk.Button(
             self,
             text='Stop',
-            command=self.stop_program,
+            command=self._stop_program,
         )
         stop_button.grid(column=1, row=2, padx=10, pady=10, sticky=tk.W)
 
@@ -84,6 +84,14 @@ class ProgressWindow(tk.Toplevel):
         # start window main loop
         self.mainloop()
 
+    def _update_progress_label(self):
+        """This function generates a string for the progress label
+
+        Returns:
+            String: String for the progress label
+        """
+        return f"Current Progress: {self.progress_bar['value']}%"
+
     def _stop_program(self):
         """This function stops the measurement and closes the progress bar window
         """
@@ -106,7 +114,7 @@ class ProgressWindow(tk.Toplevel):
         for i in range(0,100):
 
             self.progress_bar['value'] = i
-            self.value_label['text'] = f"Current Progress: {self.progress_bar['value']}%"
+            self.value_label['text'] = self._update_progress_label()
 
             self.stopped.wait(timeout=1)
 
@@ -114,7 +122,11 @@ class ProgressWindow(tk.Toplevel):
                 return
 
     def _control_xy_table(self, **measurement_configuration):
-        """
+        """This method controls the movement of the xy-table, starts mesurements and saves the results of
+        measurement runs
+
+        Args:
+            measurement_configuration (dict): Dictonary with measurment configuration
         """
     
         # Calculate number of x and y values
@@ -222,7 +234,7 @@ class ProgressWindow(tk.Toplevel):
                         # update progress bar in gui
                         progress = progress + stepsize
                         self.progress_bar['value'] = math.ceil(progress)
-                        self.value_label['text'] = f"Current Progress: {self.progress_bar['value']}%"
+                        self.value_label['text'] = self._update_progress_label()
 
                     # as long as not last measurement
                     if currentystep < (Anzahl_Y - 1 ):
