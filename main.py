@@ -12,8 +12,7 @@ LEVEL = logging.INFO
 
 if ENABLE_DEBUGGING_CONSOLE:
 
-    logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', level=logging.DEBUG,
-                        stream=sys.stdout)
+    logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', level=LEVEL, stream=sys.stdout)
 else:
 
     # if ENABLE_DEBUGGING_CONSOLE is False, write logger output into file

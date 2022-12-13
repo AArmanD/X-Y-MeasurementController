@@ -4,34 +4,34 @@ from tkinter import filedialog
 import matplotlib.pyplot as plt
 import json
 
-import measurement_controller
-
-# todo kill thread when stop is pressed
+import progress_window
 
 class StartWindow(tk.Tk):
+    """Class which controls the start window in which measurement configuration can be inputted/exported and
+    a measurement can be started
+    """
+
     def __init__(self):
-        """This class initializes the configuration window for the measurement
+        """This function initializes the configuration window for the measurement
         """
 
         super().__init__()
 
-        self.title("X-Y Messprogramm")
-
+        # set title
+        self.title("X-Y Measuring progam")
         
         # create menu bar
-        menubar = tk.Menu(self)
-        self.config(menu=menubar)
+        menu_bar = tk.Menu(self)
+        self.config(menu=menu_bar)
+
+        options_menu = tk.Menu(menu_bar, tearoff=False)
+        options_menu.add_command(label="Import measuement configuration", underline=0, command=self._read_configuration_from_json)
+        options_menu.add_command(label="Export measurement configuration", underline=0, command=self._write_configuration_to_json)
+        options_menu.add_command(label="Show measurement graph", underline=0, command=self.destroy)
+        options_menu.add_command(label="Exit", underline=0, command=self.destroy)
+
+        menu_bar.add_cascade(label="Options", underline=0, menu=options_menu)
         
-
-        fileMenu = tk.Menu(menubar, tearoff=False)
-        fileMenu.add_command(label="Import measuement configuration", underline=0, command=self.read_configuration_from_json)
-        fileMenu.add_command(label="Export measurement configuration", underline=0, command=self.write_configuration_to_json)
-        fileMenu.add_command(label="Show measurement graph", underline=0, command=self.destroy)
-        fileMenu.add_command(label="Exit", underline=0, command=self.destroy)
-
-        menubar.add_cascade(label="Options", underline=0, menu=fileMenu)
-        
-
         # add icon
         photo = tk.PhotoImage(file = 'icon.png')
         self.wm_iconphoto(False, photo)
@@ -43,9 +43,10 @@ class StartWindow(tk.Tk):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=3)
     
+        # initialize Labels and input fields
         self.ausgabe_label1 = tk.Label(
             self,
-            text="Umrechnungsfaktor von Spannung in Leistung:",
+            text="Conversion of voltage to power",
             font=("Arial", 10),
         )
         self.ausgabe_label1.grid(column=0, row=0, sticky="w")
@@ -56,7 +57,7 @@ class StartWindow(tk.Tk):
     
         ausgabe_label2 = tk.Label(
             self,
-            text="Anzahl der Messdurchläufe:",
+            text="Number of measurement runs:",
             font=("Arial", 10),
         )
         ausgabe_label2.grid(column=0, row=1, sticky="w")
@@ -66,7 +67,7 @@ class StartWindow(tk.Tk):
     
         ausgabe_label3 = tk.Label(
             self,
-            text="Anzahl der Messungen an einer Position:",
+            text="Number of measurements at one position:",
             font=("Arial", 10),
         )
         ausgabe_label3.grid(column=0, row=2, sticky="w")
@@ -76,7 +77,7 @@ class StartWindow(tk.Tk):
     
         ausgabe_label4 = tk.Label(
             self,
-            text="X-Startwert in mm:",
+            text="X-start-value in mm:",
             font=("Arial", 10),
         )
         ausgabe_label4.grid(column=0, row=3, sticky="w")
@@ -86,7 +87,7 @@ class StartWindow(tk.Tk):
     
         ausgabe_label5 = tk.Label(
             self,
-            text="Y-Startwert in mm:",
+            text="Y-start-value in mm:",
             font=("Arial", 10),
         )
         ausgabe_label5.grid(column=0, row=4, sticky="w")
@@ -96,7 +97,7 @@ class StartWindow(tk.Tk):
     
         ausgabe_label6 = tk.Label(
             self,
-            text="X-Endwert in mm:",
+            text="X-end-value in mm:",
             font=("Arial", 10),
         )
         ausgabe_label6.grid(column=0, row=5, sticky="w")
@@ -106,7 +107,7 @@ class StartWindow(tk.Tk):
     
         ausgabe_label7 = tk.Label(
             self,
-            text="Y-Endwert in mm:",
+            text="Y-end-value in mm:",
             font=("Arial", 10),
         )
         ausgabe_label7.grid(column=0, row=6, sticky="w")
@@ -116,7 +117,7 @@ class StartWindow(tk.Tk):
     
         ausgabe_label8 = tk.Label(
             self,
-            text="Delta X-Wert in mm:",
+            text="Delta X-value in mm:",
             font=("Arial", 10),
         )
         ausgabe_label8.grid(column=0, row=7, sticky="w")
@@ -126,7 +127,7 @@ class StartWindow(tk.Tk):
     
         ausgabe_label9 = tk.Label(
             self,
-            text="Delta Y-Wert in mm:",
+            text="Delta Y-value in mm:",
             font=("Arial", 10),
         )
         ausgabe_label9.grid(column=0, row=8, sticky="w")
@@ -137,37 +138,42 @@ class StartWindow(tk.Tk):
     
         self.start_btn = tk.Button(
             self,
-            text="Messung starten",
+            text="Start measurement",
             font=("Arial", 10),
-            command=self.start_measurement,
+            command=self._start_measurement,
         )
 
         self.start_btn.grid(column=0, row=11, columnspan=2, pady=15)
-    
-        # tk.Button(
-        #     self,
-        #     text="Messung stoppen",
-        #     font=("Arial", 10),
-        #     bg="red",
-        #     command=self.destroy
-        # ).grid(column=1, row=9)
 
         # prevent gui resize
         self.resizable(False, False)
 
-    def start_measurement(self):
+    def _start_measurement(self):
+        """This function creates a progress bar window which starts the measurement process
+        """
 
-        self.start_btn['state'] = 'disabled'
-        measurement_configuration = self.read_configuration()
+        # read in the measurement configuration
+        measurement_configuration = self._read_configuration()
 
-        measurement_controller.MeasurementController(self, **measurement_configuration)
+        # if measurement configuration not valid, return
+        if(not measurement_configuration):
+            return
 
-        print("out of window")
-        self.start_btn['state'] = 'normal'
+        # disable start measurement button
+        self.start_btn['state'] = tk.DISABLED
+
+        # start progress window
+        progress_window.ProgressWindow(self, **measurement_configuration)
+
+        # enable start measurement button after measurement again
+        self.start_btn['state'] = tk.NORMAL
 
 
-    def read_configuration(self):
-        """This function reads in the entered configuration from the input fields
+    def _read_configuration(self):
+        """This function reads in the entered configuration from the input fields into a dictionary which then is returned
+
+        Returns:
+            Dict: Dictionary with read in measurement configuration data
         """
 
         measurement_configuration = dict()
@@ -190,7 +196,11 @@ class StartWindow(tk.Tk):
 
         return measurement_configuration
 
-    def read_configuration_from_json(self):
+    def _read_configuration_from_json(self):
+        """This function reads in a measurement configuration file and writes the values into the input fields
+        """
+
+        # get path to file
         filepath = filedialog.askopenfilename(
             title='Datei öffnen',
             filetypes=(('Konfigurations Datei','*.json'),('Alle Formate','*.*'))
@@ -198,40 +208,38 @@ class StartWindow(tk.Tk):
 
         config = dict()
 
+        # open json file
         with open(filepath, mode='r') as json_file:
             config = json.load(json_file)
 
         for key in config:
 
-            # Load the config into input fields
+            # clear input field
             self.input_fields[key].delete(0,tk.END)
+
+            # write appropriate value into input field
             self.input_fields[key].insert(0, config[key])
         
-    def write_configuration_to_json(self):
+    def _write_configuration_to_json(self):
+        """This function writes measurement configuration from the input fields into a json file
+        """
 
-        measurement_configuration = self.read_configuration()
+        # check whether the values in the inputs are valid by reading them in
+        measurement_configuration = self._read_configuration()
 
+        # if the measurement configuration values are not valid, return without saving
         if(not measurement_configuration):
             return
 
+        # open file dialog for choosing the save path, file object is returned
         file = filedialog.asksaveasfile(mode='w', defaultextension=".json", filetypes=(('Konfigurations Datei','*.json'),('Alle Formate','*.*')))
         
         # return if file dialog was closed with "cancel"
         if file is None:
             return
 
+        # write the measurement configuration into the file object
         json.dump(measurement_configuration, file)
 
+        # close the json file
         file.close()
-
-
-def Diagramm(Y_Werte, X_Werte, Messwerte):
-    #fig = plt.figure()
-    axes = plt.axes(projection="3d")
-    axes.scatter3D(Y_Werte, X_Werte, Messwerte, color="blue")
-    axes.set_title("3D -Diagramm der Leistungsmesswerte")
-    axes.set_xlabel("X-Korrdinaten des Verschiebetischs in mm")
-    axes.set_ylabel("Y-Korrdinaten des Verschiebetischs in mm")
-    axes.set_zlabel("Mittelwerte pro Position in P")
-    plt.tight_layout()
-    plt.show()
