@@ -46,7 +46,7 @@ class StartWindow(tk.Tk):
         # initialize Labels and input fields
         self.ausgabe_label1 = tk.Label(
             self,
-            text="Conversion of voltage to power",
+            text="Conversion factor of voltage to power",
             font=("Arial", 10),
         )
         self.ausgabe_label1.grid(column=0, row=0, sticky="w")
