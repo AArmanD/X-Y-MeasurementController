@@ -1,3 +1,10 @@
+"""Module which contains functions for controlling the measurements
+
+    Usage:
+    control_xy_table(progress_window, **measurement_configuration) -> move x-y-table with specific configuration
+    make_measurement(**measurement_configuration) -> make measurement (is called in control_xy_table)
+"""
+
 import pyvisa
 from pipython import GCSDevice, pitools
 import numpy as np

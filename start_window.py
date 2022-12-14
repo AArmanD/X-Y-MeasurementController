@@ -1,3 +1,12 @@
+"""Module for managing the start window
+
+Contains class StartWindow for that purpose
+
+    Usage:
+        start_window = StartWindow -> starts the start window
+        start_window.mainloop() -> start main loop of the start window
+"""
+
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import filedialog
@@ -44,93 +53,93 @@ class StartWindow(tk.Tk):
         self.columnconfigure(1, weight=3)
     
         # initialize Labels and input fields
-        self.ausgabe_label1 = tk.Label(
+        output_label_1 = tk.Label(
             self,
             text="Conversion factor of voltage to power",
             font=("Arial", 10),
         )
-        self.ausgabe_label1.grid(column=0, row=0, sticky="w")
+        output_label_1.grid(column=0, row=0, sticky="w")
         
 
         self.input_fields["conversion_factor"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
         self.input_fields["conversion_factor"].grid(column=1, row=0, sticky="e")
     
-        ausgabe_label2 = tk.Label(
+        output_label_2 = tk.Label(
             self,
             text="Number of measurement runs:",
             font=("Arial", 10),
         )
-        ausgabe_label2.grid(column=0, row=1, sticky="w")
+        output_label_2.grid(column=0, row=1, sticky="w")
 
         self.input_fields["number_of_measurement_runs"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
         self.input_fields["number_of_measurement_runs"].grid(column=1, row=1, sticky="e")
     
-        ausgabe_label3 = tk.Label(
+        output_label_3 = tk.Label(
             self,
             text="Number of measurements at one position:",
             font=("Arial", 10),
         )
-        ausgabe_label3.grid(column=0, row=2, sticky="w")
+        output_label_3.grid(column=0, row=2, sticky="w")
 
         self.input_fields["number_of_measurements_in_one_position"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
         self.input_fields["number_of_measurements_in_one_position"].grid(column=1, row=2, sticky="e")
     
-        ausgabe_label4 = tk.Label(
+        output_label_4 = tk.Label(
             self,
             text="X-start-value in mm:",
             font=("Arial", 10),
         )
-        ausgabe_label4.grid(column=0, row=3, sticky="w")
+        output_label_4.grid(column=0, row=3, sticky="w")
 
         self.input_fields["x_start_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
         self.input_fields["x_start_value"].grid(column=1, row=3, sticky="e")
     
-        ausgabe_label5 = tk.Label(
+        output_label_5 = tk.Label(
             self,
             text="Y-start-value in mm:",
             font=("Arial", 10),
         )
-        ausgabe_label5.grid(column=0, row=4, sticky="w")
+        output_label_5.grid(column=0, row=4, sticky="w")
 
         self.input_fields["y_start_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
         self.input_fields["y_start_value"].grid(column=1, row=4, sticky="e")
     
-        ausgabe_label6 = tk.Label(
+        output_label_6 = tk.Label(
             self,
             text="X-end-value in mm:",
             font=("Arial", 10),
         )
-        ausgabe_label6.grid(column=0, row=5, sticky="w")
+        output_label_6.grid(column=0, row=5, sticky="w")
 
         self.input_fields["x_end_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
         self.input_fields["x_end_value"].grid(column=1, row=5, sticky="e")
     
-        ausgabe_label7 = tk.Label(
+        output_label_7 = tk.Label(
             self,
             text="Y-end-value in mm:",
             font=("Arial", 10),
         )
-        ausgabe_label7.grid(column=0, row=6, sticky="w")
+        output_label_7.grid(column=0, row=6, sticky="w")
 
         self.input_fields["y_end_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
         self.input_fields["y_end_value"].grid(column=1, row=6, sticky="e")
     
-        ausgabe_label8 = tk.Label(
+        output_label_8 = tk.Label(
             self,
             text="Delta X-value in mm:",
             font=("Arial", 10),
         )
-        ausgabe_label8.grid(column=0, row=7, sticky="w")
+        output_label_8.grid(column=0, row=7, sticky="w")
 
         self.input_fields["delta_x_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
         self.input_fields["delta_x_value"].grid(column=1, row=7, sticky="e")
     
-        ausgabe_label9 = tk.Label(
+        output_label_9 = tk.Label(
             self,
             text="Delta Y-value in mm:",
             font=("Arial", 10),
         )
-        ausgabe_label9.grid(column=0, row=8, sticky="w")
+        output_label_9.grid(column=0, row=8, sticky="w")
 
         self.input_fields["delta_y_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
         self.input_fields["delta_y_value"].grid(column=1, row=8, sticky="e")

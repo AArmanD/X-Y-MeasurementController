@@ -1,3 +1,11 @@
+"""Module for managing the progress window
+
+Contains class ProgressWindow for that purpose
+
+    Usage:
+        progress_window = ProgressWindow() -> starts progress window, which also directly starts the measurements
+"""
+
 import tkinter as tk
 from tkinter import ttk
 import threading

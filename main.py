@@ -1,3 +1,6 @@
+"""Module for starting the X-Y-Measurement controller. Initializes logger, then opens the start window
+"""
+
 import logging.handlers
 import sys
 import os
