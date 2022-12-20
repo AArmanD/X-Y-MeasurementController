@@ -136,8 +136,8 @@ def control_xy_table(progress_window, **measurement_configuration):
                     if currentxstep < (Anzahl_X - 1 ):
                         
                         # this instead of using currentposition avoids error propagation
-                        theoreticalposition = (currentxstep + 1) * measurement_configuration["delta_x_value"] 
-                        nextxposition = theoreticalposition + measurement_configuration["delta_x_value"]
+                        delta_to_start = (currentxstep + 1) * measurement_configuration["delta_x_value"]
+                        nextxposition = measurement_configuration["x_start_value"] + delta_to_start
 
                         # Move to next X Meassurepoint
                         Device2.MOV(1, nextxposition)
@@ -158,11 +158,11 @@ def control_xy_table(progress_window, **measurement_configuration):
                     progress_window.update_progress_bar(math.ceil(progress))
 
                 # as long as not last measurement
-                if currentystep < (Anzahl_Y - 1 ):
+                if currentystep < (Anzahl_Y - 1):
                     
                     # this instead of using currentposition avoids error propagation
-                    theoreticalposition = (currentystep + 1) * measurement_configuration["delta_y_value"] 
-                    nextyposition = theoreticalposition + measurement_configuration["delta_y_value"]
+                    delta_to_start = (currentxstep + 1) * measurement_configuration["delta_y_value"]
+                    nextyposition = measurement_configuration["y_start_value"] + delta_to_start
 
                     # Move to next Y Meassurepoint
                     Device1.MOV(1, nextyposition)
