@@ -1,4 +1,6 @@
 __pycache__/progress_window.cpython-310.pyc
 measurementcontroller.log
 __pycache__/start_window.cpython-310.pyc
-__pycache__/measurement_functions.cpython-310.pyc
+__pycache__/*
+measurement_run*
+__pycache__/measurement_functions.cpython-39.pyc

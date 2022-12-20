@@ -6,12 +6,15 @@
 """
 
 import pyvisa
-from pipython import GCSDevice, pitools
+from pipython import GCSDevice, pitools, PILogger
 import numpy as np
 import math
 import logging
 import pandas as pd
+import time
 
+PILogger.handlers = []
+pyvisa.logger.handlers = []
 
 _logger = logging.getLogger(__name__)
 
@@ -79,10 +82,24 @@ def control_xy_table(progress_window, **measurement_configuration):
 
             # reset of the y and x axis to start point
             Device1.MOV(1, measurement_configuration["y_start_value"])
+            
+            # wait a little, so the response is correctly received
+            time.sleep(0.1)
+            
             pitools.waitontarget(Device1, axes=1)
 
+            # wait a little, so the response is correctly received
+            time.sleep(0.1)
+
             Device2.MOV(1, measurement_configuration["x_start_value"])
+            
+            # wait a little, so the response is correctly received
+            time.sleep(0.1)
+
             pitools.waitontarget(Device2, axes=1)
+            
+            # wait a little, so the response is correctly received
+            time.sleep(0.1)
 
             # wait so the table doesnt shake anymore
             progress_window.get_thread_flag().wait(timeout=5)
@@ -124,7 +141,14 @@ def control_xy_table(progress_window, **measurement_configuration):
 
                         # Move to next X Meassurepoint
                         Device2.MOV(1, nextxposition)
+                        
+                        # wait a little, so the response is correctly received
+                        time.sleep(0.1)
+                        
                         pitools.waitontarget(Device2, axes=1)
+                        
+                        # wait a little, so the response is correctly received
+                        time.sleep(0.1)
 
                         # timer to wait so the table doesnt shake anymore
                         progress_window.get_thread_flag().wait(timeout=5)       
@@ -142,24 +166,41 @@ def control_xy_table(progress_window, **measurement_configuration):
 
                     # Move to next Y Meassurepoint
                     Device1.MOV(1, nextyposition)
+                    
+                    # wait a little, so the response is correctly received
+                    time.sleep(0.1)
+                    
                     pitools.waitontarget(Device1, axes=1)
+                    
+                    # wait a little, so the response is correctly received
+                    time.sleep(0.1)
 
                 # Reset to "beginning of line" for next measurement
                 Device2.MOV(1, measurement_configuration["x_start_value"])
+                
+                # wait a little, so the response is correctly received
+                time.sleep(0.1)
+                
                 pitools.waitontarget(Device2, axes=1)
+                
+                # wait a little, so the response is correctly received
+                time.sleep(0.1)
 
             
             _logger.info('Saving measurement run results...')
 
             # Save measurement results
             df = pd.DataFrame({"xpos" : xpositionvalues, "ypos" : ypositionvalues, "measure" : measurements})
-            df.to_csv(f"Measurementrun {i}.csv", index=False)
+            df.to_csv(f"Measurement_run_{i}.csv", index=False)
         
         _logger.info("Close daisy chain connection")
 
         # close the daisy chain connection
         Device2.CloseDaisyChain()
         Device1.CloseDaisyChain()
+        
+        # close progress window
+        progress_window.close_progress_window_after_finish()
 
 def make_measurement(**measurement_configuration):
     """This function performs the local measurement. If more then one measurement is taken the mean of all saved values is returned.

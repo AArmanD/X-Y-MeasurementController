@@ -35,7 +35,7 @@ class ProgressWindow(tk.Toplevel):
 
         # add icon
         self.wm_iconphoto(False, tk.PhotoImage(file = 'icon.png'))
-
+        
         # configure window layout to be a grid
         self.grid()
 
@@ -68,10 +68,10 @@ class ProgressWindow(tk.Toplevel):
         self.stopped.clear()
 
         # for test purposes (should be removed at final release)
-        self.main_thread = threading.Thread(target=self._test_progress_bar, daemon=True)
+        # self.main_thread = threading.Thread(target=self._test_progress_bar, daemon=True)
 
         # create and start measure thread
-        #self.main_thread = Thread(target=lambda: measurement_functions.control_xy_table(self ,**measurement_configuration))
+        self.main_thread = threading.Thread(target=lambda: measurement_functions.control_xy_table(self ,**measurement_configuration))
 
         # start measuring thread
         self.main_thread.start()
@@ -136,3 +136,11 @@ class ProgressWindow(tk.Toplevel):
         """
         self.progress_bar['value'] = value
         self.value_label['text'] = self._update_progress_label()
+        
+    def close_progress_window_after_finish(self):
+        
+        # destroys the window
+        self.destroy()
+
+        # quits the mainloop
+        self.quit()
