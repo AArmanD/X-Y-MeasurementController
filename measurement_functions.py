@@ -120,7 +120,7 @@ def control_xy_table(progress_window, **measurement_configuration):
                     xpositionvalues[measurementcounter] = currentxposition 
                     ypositionvalues[measurementcounter] = currentyposition
                     
-                    _logger.debug('Actual Data: x-pos: {:.2f} y-pos: {:.2f} reading: {:.2f}'.format(currentyposition, currentxposition, measurements[measurementcounter]))
+                    _logger.info('Actual Data: x-pos: {:.2f} y-pos: {:.2f} reading: {:.2f}'.format(currentxposition, currentyposition, measurements[measurementcounter]))
 
                     measurementcounter = measurementcounter + 1
 
@@ -133,7 +133,7 @@ def control_xy_table(progress_window, **measurement_configuration):
                         return
 
                     # as long as not last measurement
-                    if currentxstep < (Anzahl_X - 1 ):
+                    if currentxstep < (Anzahl_X):
                         
                         # this instead of using currentposition avoids error propagation
                         delta_to_start = (currentxstep + 1) * measurement_configuration["delta_x_value"]
@@ -158,12 +158,12 @@ def control_xy_table(progress_window, **measurement_configuration):
                     progress_window.update_progress_bar(math.ceil(progress))
 
                 # as long as not last measurement
-                if currentystep < (Anzahl_Y - 1):
+                if currentystep < (Anzahl_Y):
                     
                     # this instead of using currentposition avoids error propagation
-                    delta_to_start = (currentxstep + 1) * measurement_configuration["delta_y_value"]
+                    delta_to_start = (currentystep + 1) * measurement_configuration["delta_y_value"]
                     nextyposition = measurement_configuration["y_start_value"] + delta_to_start
-
+    
                     # Move to next Y Meassurepoint
                     Device1.MOV(1, nextyposition)
                     
@@ -185,6 +185,9 @@ def control_xy_table(progress_window, **measurement_configuration):
                 
                 # wait a little, so the response is correctly received
                 time.sleep(0.1)
+                
+                # timer to wait so the table doesnt shake anymore
+                progress_window.get_thread_flag().wait(timeout=5)      
 
             
             _logger.info('Saving measurement run results...')

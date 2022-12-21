@@ -11,7 +11,7 @@ import start_window
 ENABLE_DEBUGGING_CONSOLE = True
 
 # set logging level -> there are DEBUG, INFO, WARNING, ERROR and CRITICAL
-LEVEL = logging.DEBUG
+LEVEL = logging.INFO
 
 if ENABLE_DEBUGGING_CONSOLE:
 
