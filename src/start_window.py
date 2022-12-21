@@ -154,7 +154,7 @@ class StartWindow(tk.Tk):
         output_label_9.grid(column=0, row=9, sticky="w")
 
         self.input_fields["wait_time"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
-        self.input_fields["wait_time"].grid(column=1, row=8, sticky="e")
+        self.input_fields["wait_time"].grid(column=1, row=9, sticky="e")
 
     
         self.start_btn = tk.Button(
