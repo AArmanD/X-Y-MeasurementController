@@ -209,7 +209,7 @@ class StartWindow(tk.Tk):
             measurement_configuration["y_end_value"] = int(self.input_fields["y_end_value"].get())
             measurement_configuration["delta_x_value"] = float(self.input_fields["delta_x_value"].get())
             measurement_configuration["delta_y_value"] = float(self.input_fields["delta_y_value"].get())
-            measurement_configuration["wait_time"] = int(self.input_fields["wait_time"].get())
+            measurement_configuration["wait_time"] = float(self.input_fields["wait_time"].get())
 
         except ValueError:
             messagebox.showerror("Title", "Error in reading in configuration")
