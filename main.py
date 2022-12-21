@@ -5,7 +5,7 @@ import logging.handlers
 import sys
 import os
 
-import start_window
+import src.start_window as start_window
 
 # set whether the logger outputs into the console or in a file
 ENABLE_DEBUGGING_CONSOLE = True

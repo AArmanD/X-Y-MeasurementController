@@ -12,8 +12,9 @@ from tkinter import messagebox
 from tkinter import filedialog
 import matplotlib.pyplot as plt
 import json
+import pandas as pd
 
-import progress_window
+import src.progress_window as progress_window
 
 class StartWindow(tk.Tk):
     """Class which controls the start window in which measurement configuration can be inputted/exported and
@@ -36,14 +37,13 @@ class StartWindow(tk.Tk):
         options_menu = tk.Menu(menu_bar, tearoff=False)
         options_menu.add_command(label="Import measuement configuration", underline=0, command=self._read_configuration_from_json)
         options_menu.add_command(label="Export measurement configuration", underline=0, command=self._write_configuration_to_json)
-        options_menu.add_command(label="Show measurement graph", underline=0, command=self.destroy)
+        options_menu.add_command(label="Show measurement graph", underline=0, command=self._print_data_graph)
         options_menu.add_command(label="Exit", underline=0, command=self.destroy)
 
         menu_bar.add_cascade(label="Options", underline=0, menu=options_menu)
         
         # add icon
-        photo = tk.PhotoImage(file = 'icon.png')
-        self.wm_iconphoto(False, photo)
+        self.iconbitmap('res/icon.ico')
     
         # create field for storing input variables
         self.input_fields = dict()
@@ -93,26 +93,27 @@ class StartWindow(tk.Tk):
 
         self.input_fields["x_start_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
         self.input_fields["x_start_value"].grid(column=1, row=3, sticky="e")
-    
-        output_label_5 = tk.Label(
-            self,
-            text="Y-start-value in mm:",
-            font=("Arial", 10),
-        )
-        output_label_5.grid(column=0, row=4, sticky="w")
 
-        self.input_fields["y_start_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
-        self.input_fields["y_start_value"].grid(column=1, row=4, sticky="e")
-    
-        output_label_6 = tk.Label(
+        output_label_5 = tk.Label(
             self,
             text="X-end-value in mm:",
             font=("Arial", 10),
         )
-        output_label_6.grid(column=0, row=5, sticky="w")
+        output_label_5.grid(column=0, row=4, sticky="w")
 
         self.input_fields["x_end_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
-        self.input_fields["x_end_value"].grid(column=1, row=5, sticky="e")
+        self.input_fields["x_end_value"].grid(column=1, row=4, sticky="e")
+    
+        output_label_6 = tk.Label(
+            self,
+            text="Y-start-value in mm:",
+            font=("Arial", 10),
+        )
+        output_label_6.grid(column=0, row=5, sticky="w")
+
+        self.input_fields["y_start_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
+        self.input_fields["y_start_value"].grid(column=1, row=5, sticky="e")
+    
     
         output_label_7 = tk.Label(
             self,
@@ -143,6 +144,17 @@ class StartWindow(tk.Tk):
 
         self.input_fields["delta_y_value"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
         self.input_fields["delta_y_value"].grid(column=1, row=8, sticky="e")
+
+
+        output_label_9 = tk.Label(
+            self,
+            text="Wait time before each measurement",
+            font=("Arial", 10),
+        )
+        output_label_9.grid(column=0, row=9, sticky="w")
+
+        self.input_fields["wait_time"] = tk.Entry(self, font=("Arial", 10), width=10, justify="right")
+        self.input_fields["wait_time"].grid(column=1, row=8, sticky="e")
 
     
         self.start_btn = tk.Button(
@@ -197,6 +209,7 @@ class StartWindow(tk.Tk):
             measurement_configuration["y_end_value"] = int(self.input_fields["y_end_value"].get())
             measurement_configuration["delta_x_value"] = float(self.input_fields["delta_x_value"].get())
             measurement_configuration["delta_y_value"] = float(self.input_fields["delta_y_value"].get())
+            measurement_configuration["wait_time"] = int(self.input_fields["wait_time"].get())
 
         except ValueError:
             messagebox.showerror("Title", "Error in reading in configuration")
@@ -214,6 +227,10 @@ class StartWindow(tk.Tk):
             title='Datei öffnen',
             filetypes=(('Konfigurations Datei','*.json'),('Alle Formate','*.*'))
         )
+
+        # if cancel is pressed, exit the process
+        if not filepath:
+            return
 
         config = dict()
 
@@ -252,3 +269,43 @@ class StartWindow(tk.Tk):
 
         # close the json file
         file.close()
+
+    def _print_data_graph(self):
+        """This function prints out a graph of the measured data
+        """
+
+        # get path to file
+        filepath = filedialog.askopenfilename(
+            title='Datei öffnen',
+            filetypes=(('Konfigurations Datei','*.csv'),('Alle Formate','*.*'))
+        )
+
+        # if cancel is pressed, exit the process
+        if not filepath:
+            return
+
+        # read data out of the csv file into a pandas dataframe
+        df = pd.read_csv(filepath)
+
+        # set the data for plotting
+        axes = plt.axes(projection="3d")
+        axes.scatter3D(df['ypos'].to_numpy(), df['xpos'].to_numpy(), df['measure'].to_numpy(), color="blue")
+
+        # set the labels in the plot window
+        axes.set_title("3D -Diagramm der Leistungsmesswerte")
+        axes.set_xlabel("X-Korrdinaten in mm", fontsize=6)
+        axes.set_ylabel("Y-Korrdinaten in mm", fontsize=6)
+        axes.set_zlabel("Mittelwerte pro Position in P", fontsize=6)
+
+        # set the icon of the plot
+        current_fig_manager = plt.get_current_fig_manager()
+        current_fig_manager.window.wm_iconbitmap('res/icon.ico')
+
+        # set size of tick parameters to be smaller, so nothing overlaps
+        plt.tick_params(axis='x', which='major', labelsize=6)
+        plt.tick_params(axis='y', which='major', labelsize=6)
+        plt.tick_params(axis='z', which='major', labelsize=6)
+
+        # plt.rcParams.update({'font.size': 12})
+        plt.tight_layout()
+        plt.show()

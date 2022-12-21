@@ -10,7 +10,7 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 
-import measurement_functions
+import src.measurement_functions as measurement_functions
 
 
 class ProgressWindow(tk.Toplevel):
@@ -34,7 +34,7 @@ class ProgressWindow(tk.Toplevel):
         self.geometry('300x120')
 
         # add icon
-        self.wm_iconphoto(False, tk.PhotoImage(file = 'icon.png'))
+        self.iconbitmap('res/icon.ico')
         
         # configure window layout to be a grid
         self.grid()
@@ -68,10 +68,10 @@ class ProgressWindow(tk.Toplevel):
         self.stopped.clear()
 
         # for test purposes (should be removed at final release)
-        # self.main_thread = threading.Thread(target=self._test_progress_bar, daemon=True)
+        self.main_thread = threading.Thread(target=self._test_progress_bar, daemon=True)
 
         # create and start measure thread
-        self.main_thread = threading.Thread(target=lambda: measurement_functions.control_xy_table(self ,**measurement_configuration))
+        # self.main_thread = threading.Thread(target=lambda: measurement_functions.control_xy_table(self ,**measurement_configuration))
 
         # start measuring thread
         self.main_thread.start()
