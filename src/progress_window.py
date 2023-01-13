@@ -143,25 +143,25 @@ class ProgressWindow(tk.Toplevel):
            message window which states that the measurement run was successful
         """
 
+        # create message box which shows that 
+        messagebox.showinfo("Measurement run successful", "Measurement run successfully finished")
+
         # destroys the window
         self.destroy()
 
         # quits the mainloop
         self.quit()
-
-        # create message box which shows that 
-        messagebox.showinfo("Measurement run successful", "Measurement run successfully finished")
 
     def show_error_message(self, message):
         """This method closes the progress bar window when there was an error and shows
            message window which states that there was an error while measuring
         """
 
+        # create error message box
+        messagebox.showerror("Error", message)
+
         # destroys the window
         self.destroy()
 
         # quits the mainloop
         self.quit()
-
-        # create error message box
-        messagebox.showerror("Error", message)

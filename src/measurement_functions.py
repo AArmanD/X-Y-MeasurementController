@@ -46,10 +46,6 @@ def control_xy_table(progress_window, **measurement_configuration):
     try:
         # create two gsc device instances for being able to control the two step motors
         with GCSDevice() as device_1, GCSDevice() as device_2:
-            
-            # Set the error checking to false
-            device_1.errcheck = False
-            device_2.errcheck = False
 
             # Fist setup of the master device which is connected via pc
             device_1.OpenUSBDaisyChain(description='0017550026')
@@ -79,6 +75,9 @@ def control_xy_table(progress_window, **measurement_configuration):
             _logger.info('Min x-axis 2:', device_2.qTMN())
             _logger.info('Max x-axis 2:', device_2.qTMX())
 
+            # Set the error checking to false
+            device_1.errcheck = False
+            device_2.errcheck = False
 
             # run the ammount of configured measuremnts
             for i in range(measurement_configuration["number_of_measurement_runs"]): 
@@ -94,9 +93,7 @@ def control_xy_table(progress_window, **measurement_configuration):
                 # check for error messages
                 error_message_1 = device_1.read('ERR?')
                 error_message_2 = device_2.read('ERR?')
-                if check_error_messages(error_message_1, error_message_2):
-                    device_1.RES(1)
-                    device_2.RES(1)
+                check_error_messages(error_message_1, error_message_2)
                 
                 pitools.waitontarget(device_1, axes=1)
 
@@ -111,9 +108,7 @@ def control_xy_table(progress_window, **measurement_configuration):
                 # check for error messages
                 error_message_1 = device_1.read('ERR?')
                 error_message_2 = device_2.read('ERR?')
-                if check_error_messages(error_message_1, error_message_2):
-                    device_1.RES(1)
-                    device_2.RES(1)
+                check_error_messages(error_message_1, error_message_2)
 
                 pitools.waitontarget(device_2, axes=1)
                 
@@ -169,9 +164,7 @@ def control_xy_table(progress_window, **measurement_configuration):
                             # check for error messages
                             error_message_1 = device_1.read('ERR?')
                             error_message_2 = device_2.read('ERR?')
-                            if check_error_messages(error_message_1, error_message_2):
-                                device_1.RES(1)
-                                device_2.RES(1)
+                            check_error_messages(error_message_1, error_message_2)
                             
                             pitools.waitontarget(device_2, axes=1)
                             
@@ -201,9 +194,7 @@ def control_xy_table(progress_window, **measurement_configuration):
                         # check for error messages
                         error_message_1 = device_1.read('ERR?')
                         error_message_2 = device_2.read('ERR?')
-                        if check_error_messages(error_message_1, error_message_2):
-                            device_1.RES(1)
-                            device_2.RES(1)
+                        check_error_messages(error_message_1, error_message_2)
                         
                         pitools.waitontarget(device_1, axes=1)
                         
@@ -219,9 +210,7 @@ def control_xy_table(progress_window, **measurement_configuration):
                     # check for error messages
                     error_message_1 = device_1.read('ERR?')
                     error_message_2 = device_2.read('ERR?')
-                    if check_error_messages(error_message_1, error_message_2):
-                        device_1.RES(1)
-                        device_2.RES(1)
+                    check_error_messages(error_message_1, error_message_2)
                     
                     pitools.waitontarget(device_2, axes=1)
                     
@@ -238,21 +227,20 @@ def control_xy_table(progress_window, **measurement_configuration):
                 df = pd.DataFrame({"xpos" : x_position_values, "ypos" : y_position_values, "measure" : measurements})
                 df.to_csv(f"measurement_data/Measurement_run_{i}.csv", index=False)
             
-            _logger.info("Close daisy chain connection")
+        _logger.info("Close daisy chain connection")
+
+        # close the daisy chain connection
+        device_2.CloseDaisyChain()
+        device_1.CloseDaisyChain()
+        
+        # close progress window
+        progress_window.close_progress_window_after_finish()
 
     except Exception as e:
 
         # show error message and close the program
         progress_window.show_error_message(str(e))
 
-
-
-    # close the daisy chain connection
-    device_2.CloseDaisyChain()
-    device_1.CloseDaisyChain()
-    
-    # close progress window
-    progress_window.close_progress_window_after_finish()
 
 def make_measurement(**measurement_configuration):
     """This function performs the local measurement. If more then one measurement is taken the mean of all saved values is returned.
@@ -293,19 +281,16 @@ def check_error_messages(error_message_1, error_message_2):
         bool: Whether there was error message -1004 recognized, so it can be resetted
     """
 
-    _logger.debug("Received error message: " + error_message_1)
-    _logger.debug("Received error message: " + error_message_2)
-
-    if(error_message_1 != b'0\n'):
-        if error_message_1 == b'-1004\n':
-            return True
+    if(error_message_1 != '0\n'):
+        if error_message_1 == '-1004\n':
+            return
         else:
             raise Exception("An error with controller 1 occured: " + error_message_1)
 
-    if(error_message_2 != b'0\n'):
-        if error_message_2 == b'-1004\n':
-            return True
+    if(error_message_2 != '0\n'):
+        if error_message_2 == '-1004\n':
+            return
         else:
             raise Exception("An error with controller 2 occured: " + error_message_2)
 
-    return False
+    return
