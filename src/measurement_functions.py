@@ -43,167 +43,216 @@ def control_xy_table(progress_window, **measurement_configuration):
     step_size = 100/(quantity_of_x_values*quantity_of_y_values*measurement_configuration["number_of_measurement_runs"])
     progress = 0
 
-    # create two gsc device instances for being able to control the two step motors
-    with GCSDevice() as device_1, GCSDevice() as device_2:
-        
-        # Fist setup of the master device which is connected via pc
-        device_1.OpenUSBDaisyChain(description='0017550026')
-        daisychainid = device_1.dcid
-        device_1.ConnectDaisyChainDevice(1, daisychainid)
-        _logger.info('Connection to DaisyChain-Master established')
-        
-        # Secondly enable connection to the next device in daisy chain
-        device_2.ConnectDaisyChainDevice(2, daisychainid)
-        _logger.info('Connection to DaisyChain-Slave established')
-        
-        # A lot of initializing information
-        _logger.info('Connected to devices with IDs')
-        _logger.info('\n{}:\n{}'.format(device_1.GetInterfaceDescription(), device_1.qIDN()))
-        _logger.info('\n{}:\n{}'.format(device_2.GetInterfaceDescription(), device_2.qIDN()))
-
-
-        _logger.info('Initialization of axes...')
-
-        # initialize axes
-        pitools.startup(device_1, stages=STAGES, refmodes=REFMODES)
-        pitools.startup(device_2, stages=STAGES, refmodes=REFMODES)
-
-        _logger.info('Min y-axis:', device_1.qTMN())
-        _logger.info('Max y-axis:', device_1.qTMX())
-
-        _logger.info('Min x-axis 2:', device_2.qTMN())
-        _logger.info('Max x-axis 2:', device_2.qTMX())
-
-
-        # run the ammount of configured measuremnts
-        for i in range(measurement_configuration["number_of_measurement_runs"]): 
+    try:
+        # create two gsc device instances for being able to control the two step motors
+        with GCSDevice() as device_1, GCSDevice() as device_2:
             
-            _logger.info('In {}. measurement run'.format(i))
+            # Set the error checking to false
+            device_1.errcheck = False
+            device_2.errcheck = False
 
-            # reset of the y and x axis to start point
-            device_1.MOV(1, measurement_configuration["y_start_value"])
+            # Fist setup of the master device which is connected via pc
+            device_1.OpenUSBDaisyChain(description='0017550026')
+            daisychainid = device_1.dcid
+            device_1.ConnectDaisyChainDevice(1, daisychainid)
+
+            _logger.info('Connection to DaisyChain-Master established')
             
-            # wait a little, so the response is correctly received
-            time.sleep(0.1)
+            # Secondly enable connection to the next device in daisy chain
+            device_2.ConnectDaisyChainDevice(2, daisychainid)
+            _logger.info('Connection to DaisyChain-Slave established')
             
-            pitools.waitontarget(device_1, axes=1)
+            # A lot of initializing information
+            _logger.info('Connected to devices with IDs')
+            _logger.info('\n{}:\n{}'.format(device_1.GetInterfaceDescription(), device_1.qIDN()))
+            _logger.info('\n{}:\n{}'.format(device_2.GetInterfaceDescription(), device_2.qIDN()))
 
-            # wait a little, so the response is correctly received
-            time.sleep(0.1)
+            _logger.info('Initialization of axes...')
 
-            device_2.MOV(1, measurement_configuration["x_start_value"])
-            
-            # wait a little, so the response is correctly received
-            time.sleep(0.1)
+            # initialize axes
+            pitools.startup(device_1, stages=STAGES, refmodes=REFMODES)
+            pitools.startup(device_2, stages=STAGES, refmodes=REFMODES)
 
-            pitools.waitontarget(device_2, axes=1)
-            
-            # wait a little, so the response is correctly received
-            time.sleep(0.1)
+            _logger.info('Min y-axis:', device_1.qTMN())
+            _logger.info('Max y-axis:', device_1.qTMX())
 
-            # wait so the table doesnt shake anymore
-            progress_window.get_thread_flag().wait(timeout=measurement_configuration["wait_time"])
+            _logger.info('Min x-axis 2:', device_2.qTMN())
+            _logger.info('Max x-axis 2:', device_2.qTMX())
 
-            # cycle through the amount of measurement points with measurementcounter
-            measurement_counter = 0
 
-            for current_y_step in range(0, quantity_of_y_values):
+            # run the ammount of configured measuremnts
+            for i in range(measurement_configuration["number_of_measurement_runs"]): 
+                
+                _logger.info('In {}. measurement run'.format(i))
 
-                # cycle through the amount of meassurement points on the x axis
-                for current_x_step in range(0, quantity_of_x_values):
-                    
-                    current_y_position = device_1.qPOS(1)[1]
-                    current_x_position = device_2.qPOS(1)[1]
-                    
-                    # Measurement save to array
-                    measurements[measurement_counter] = make_measurement(**measurement_configuration)
-                    x_position_values[measurement_counter] = current_x_position 
-                    y_position_values[measurement_counter] = current_y_position
-                    
-                    _logger.info('Actual Data: x-pos: {:.2f} y-pos: {:.2f} reading: {:.2f}'.format(current_x_position, current_y_position, measurements[measurement_counter]))
+                # reset of the y and x axis to start point
+                device_1.MOV(1, measurement_configuration["y_start_value"])
+                
+                # wait a little, so the request is correctly received
+                time.sleep(0.1)
 
-                    measurement_counter = measurement_counter + 1
+                # check for error messages
+                error_message_1 = device_1.read('ERR?')
+                error_message_2 = device_2.read('ERR?')
+                if check_error_messages(error_message_1, error_message_2):
+                    device_1.RES(1)
+                    device_2.RES(1)
+                
+                pitools.waitontarget(device_1, axes=1)
 
-                    if(progress_window.get_thread_flag().is_set()):
+                # wait a little, so the response is correctly received
+                time.sleep(0.1)
 
-                        # todo check whether that works
-                        _logger.info('Close daisy chain connection')
-                        device_2.CloseDaisyChain()
-                        device_1.CloseDaisyChain()
-                        return
-
-                    # as long as not last measurement
-                    if current_x_step < quantity_of_x_values:
-                        
-                        # this instead of using currentposition avoids error propagation
-                        delta_to_start = (current_x_step + 1) * measurement_configuration["delta_x_value"]
-                        next_x_position = measurement_configuration["x_start_value"] + delta_to_start
-
-                        # Move to next X Meassurepoint
-                        device_2.MOV(1, next_x_position)
-                        
-                        # wait a little, so the response is correctly received
-                        time.sleep(0.1)
-                        
-                        pitools.waitontarget(device_2, axes=1)
-                        
-                        # wait a little, so the response is correctly received
-                        time.sleep(0.1)
-
-                        # timer to wait so the table doesnt shake anymore
-                        progress_window.get_thread_flag().wait(timeout=measurement_configuration["wait_time"])       
-
-                    # update progress bar in gui
-                    progress = progress + step_size
-                    progress_window.update_progress_bar(math.ceil(progress))
-
-                # as long as not last measurement
-                if current_y_step < quantity_of_y_values:
-                    
-                    # this instead of using currentposition avoids error propagation
-                    delta_to_start = (current_y_step + 1) * measurement_configuration["delta_y_value"]
-                    next_y_position = measurement_configuration["y_start_value"] + delta_to_start
-    
-                    # Move to next Y Meassurepoint
-                    device_1.MOV(1, next_y_position)
-                    
-                    # wait a little, so the response is correctly received
-                    time.sleep(0.1)
-                    
-                    pitools.waitontarget(device_1, axes=1)
-                    
-                    # wait a little, so the response is correctly received
-                    time.sleep(0.1)
-
-                # Reset to "beginning of line" for next measurement
                 device_2.MOV(1, measurement_configuration["x_start_value"])
                 
                 # wait a little, so the response is correctly received
                 time.sleep(0.1)
-                
+
+                # check for error messages
+                error_message_1 = device_1.read('ERR?')
+                error_message_2 = device_2.read('ERR?')
+                if check_error_messages(error_message_1, error_message_2):
+                    device_1.RES(1)
+                    device_2.RES(1)
+
                 pitools.waitontarget(device_2, axes=1)
                 
                 # wait a little, so the response is correctly received
                 time.sleep(0.1)
+
+                # wait so the table doesnt shake anymore
+                progress_window.get_thread_flag().wait(timeout=measurement_configuration["wait_time"])
+
+                # cycle through the amount of measurement points with measurementcounter
+                measurement_counter = 0
+
+                # cycle through the amount of measurement points on the y axis
+                for current_y_step in range(0, quantity_of_y_values):
+
+                    # cycle through the amount of measurement points on the x axis
+                    for current_x_step in range(0, quantity_of_x_values):
+
+                        # read out x and y position
+                        current_y_position = device_1.qPOS(1)[1]
+                        current_x_position = device_2.qPOS(1)[1]
+                        
+                        # Measurement save to array
+                        measurements[measurement_counter] = make_measurement(**measurement_configuration)
+                        x_position_values[measurement_counter] = current_x_position 
+                        y_position_values[measurement_counter] = current_y_position
+                        
+                        _logger.info('Actual Data: x-pos: {:.2f} y-pos: {:.2f} reading: {:.2f}'.format(current_x_position, current_y_position, measurements[measurement_counter]))
+
+                        measurement_counter = measurement_counter + 1
+
+                        if(progress_window.get_thread_flag().is_set()):
+
+                            # todo check whether that works
+                            _logger.info('Close daisy chain connection')
+                            device_2.CloseDaisyChain()
+                            device_1.CloseDaisyChain()
+                            return
+
+                        # as long as not last measurement
+                        if current_x_step < quantity_of_x_values:
+                            
+                            # this instead of using currentposition avoids error propagation
+                            delta_to_start = (current_x_step + 1) * measurement_configuration["delta_x_value"]
+                            next_x_position = measurement_configuration["x_start_value"] + delta_to_start
+
+                            # Move to next X Meassurepoint
+                            device_2.MOV(1, next_x_position)
+                            
+                            # wait a little, so the response is correctly received
+                            time.sleep(0.1)
+
+                            # check for error messages
+                            error_message_1 = device_1.read('ERR?')
+                            error_message_2 = device_2.read('ERR?')
+                            if check_error_messages(error_message_1, error_message_2):
+                                device_1.RES(1)
+                                device_2.RES(1)
+                            
+                            pitools.waitontarget(device_2, axes=1)
+                            
+                            # wait a little, so the response is correctly received
+                            time.sleep(0.1)
+
+                            # timer to wait so the table doesnt shake anymore
+                            progress_window.get_thread_flag().wait(timeout=measurement_configuration["wait_time"])       
+
+                        # update progress bar in gui
+                        progress = progress + step_size
+                        progress_window.update_progress_bar(math.ceil(progress))
+
+                    # as long as not last measurement
+                    if current_y_step < quantity_of_y_values:
+                        
+                        # this instead of using currentposition avoids error propagation
+                        delta_to_start = (current_y_step + 1) * measurement_configuration["delta_y_value"]
+                        next_y_position = measurement_configuration["y_start_value"] + delta_to_start
+        
+                        # Move to next Y Meassurepoint
+                        device_1.MOV(1, next_y_position)
+                        
+                        # wait a little, so the response is correctly received
+                        time.sleep(0.1)
+
+                        # check for error messages
+                        error_message_1 = device_1.read('ERR?')
+                        error_message_2 = device_2.read('ERR?')
+                        if check_error_messages(error_message_1, error_message_2):
+                            device_1.RES(1)
+                            device_2.RES(1)
+                        
+                        pitools.waitontarget(device_1, axes=1)
+                        
+                        # wait a little, so the response is correctly received
+                        time.sleep(0.1)
+
+                    # Reset to "beginning of line" for next measurement
+                    device_2.MOV(1, measurement_configuration["x_start_value"])
+
+                    # wait a little, so the response is correctly received
+                    time.sleep(0.1)
+
+                    # check for error messages
+                    error_message_1 = device_1.read('ERR?')
+                    error_message_2 = device_2.read('ERR?')
+                    if check_error_messages(error_message_1, error_message_2):
+                        device_1.RES(1)
+                        device_2.RES(1)
+                    
+                    pitools.waitontarget(device_2, axes=1)
+                    
+                    # wait a little, so the response is correctly received
+                    time.sleep(0.1)
+                    
+                    # timer to wait so the table doesnt shake anymore
+                    progress_window.get_thread_flag().wait(timeout=measurement_configuration["wait_time"])      
+
                 
-                # timer to wait so the table doesnt shake anymore
-                progress_window.get_thread_flag().wait(timeout=measurement_configuration["wait_time"])      
+                _logger.info('Saving measurement run results...')
 
+                # Save measurement results
+                df = pd.DataFrame({"xpos" : x_position_values, "ypos" : y_position_values, "measure" : measurements})
+                df.to_csv(f"measurement_data/Measurement_run_{i}.csv", index=False)
             
-            _logger.info('Saving measurement run results...')
+            _logger.info("Close daisy chain connection")
 
-            # Save measurement results
-            df = pd.DataFrame({"xpos" : x_position_values, "ypos" : y_position_values, "measure" : measurements})
-            df.to_csv(f"measurement_data/Measurement_run_{i}.csv", index=False)
-        
-        _logger.info("Close daisy chain connection")
+    except Exception as e:
 
-        # close the daisy chain connection
-        device_2.CloseDaisyChain()
-        device_1.CloseDaisyChain()
-        
-        # close progress window
-        progress_window.close_progress_window_after_finish()
+        # show error message and close the program
+        progress_window.show_error_message(str(e))
+
+
+
+    # close the daisy chain connection
+    device_2.CloseDaisyChain()
+    device_1.CloseDaisyChain()
+    
+    # close progress window
+    progress_window.close_progress_window_after_finish()
 
 def make_measurement(**measurement_configuration):
     """This function performs the local measurement. If more then one measurement is taken the mean of all saved values is returned.
@@ -228,3 +277,35 @@ def make_measurement(**measurement_configuration):
     measured_power_value = np.mean(measurement_configuration["conversion_factor"] * voltage_measurement_values)
 
     return measured_power_value
+
+
+def check_error_messages(error_message_1, error_message_2):
+    """Does review the asked error messages, if there is one except communication error, throw exception
+
+    Args:
+        error_message_1 (Bytes): Error message of first controller
+        error_message_2 (Bytes): Error message of second controller
+
+    Raises:
+        Exception: Is raised when an error code is discovered
+
+    Returns:
+        bool: Whether there was error message -1004 recognized, so it can be resetted
+    """
+
+    _logger.debug("Received error message: " + error_message_1)
+    _logger.debug("Received error message: " + error_message_2)
+
+    if(error_message_1 != b'0\n'):
+        if error_message_1 == b'-1004\n':
+            return True
+        else:
+            raise Exception("An error with controller 1 occured: " + error_message_1)
+
+    if(error_message_2 != b'0\n'):
+        if error_message_2 == b'-1004\n':
+            return True
+        else:
+            raise Exception("An error with controller 2 occured: " + error_message_2)
+
+    return False

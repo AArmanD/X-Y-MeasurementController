@@ -8,10 +8,10 @@ import os
 import src.start_window as start_window
 
 # set whether the logger outputs into the console or in a file
-ENABLE_DEBUGGING_CONSOLE = True
+ENABLE_DEBUGGING_CONSOLE = False
 
 # set logging level -> there are DEBUG, INFO, WARNING, ERROR and CRITICAL
-LEVEL = logging.INFO
+LEVEL = logging.DEBUG
 
 if ENABLE_DEBUGGING_CONSOLE:
 
@@ -19,7 +19,7 @@ if ENABLE_DEBUGGING_CONSOLE:
 else:
 
     # if ENABLE_DEBUGGING_CONSOLE is False, write logger output into file
-    handler = logging.handlers.RotatingFileHandler(os.getcwd() + os.sep + "measurementcontroller.log", 'a', 5 * 1024 * 1024, 10)
+    handler = logging.handlers.RotatingFileHandler(os.getcwd() + os.sep + "logs" + os.sep + "measurementcontroller.log", 'a', 5 * 1024 * 1024, 10)
 
     formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-5s %(message)s')
     handler.setFormatter(formatter)

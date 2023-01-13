@@ -13,6 +13,7 @@ from tkinter import filedialog
 import matplotlib.pyplot as plt
 import json
 import pandas as pd
+import os
 
 import src.progress_window as progress_window
 
@@ -224,8 +225,9 @@ class StartWindow(tk.Tk):
 
         # get path to file
         filepath = filedialog.askopenfilename(
-            title='Datei öffnen',
-            filetypes=(('Konfigurations Datei','*.json'),('Alle Formate','*.*'))
+            title='Open file',
+            filetypes=(('Configuration files','*.json'),('All formats','*.*')),
+            initialdir=os.getcwd() + os.sep + "measurement_configurations"
         )
 
         # if cancel is pressed, exit the process
@@ -258,7 +260,12 @@ class StartWindow(tk.Tk):
             return
 
         # open file dialog for choosing the save path, file object is returned
-        file = filedialog.asksaveasfile(mode='w', defaultextension=".json", filetypes=(('Konfigurations Datei','*.json'),('Alle Formate','*.*')))
+        file = filedialog.asksaveasfile(
+            mode='w', 
+            defaultextension=".json", 
+            filetypes=(('Configuration files','*.json'),('All formats','*.*')),
+            initialdir=os.getcwd() + os.sep + "measurement_configurations"
+            )
         
         # return if file dialog was closed with "cancel"
         if file is None:
@@ -276,8 +283,9 @@ class StartWindow(tk.Tk):
 
         # get path to file
         filepath = filedialog.askopenfilename(
-            title='Datei öffnen',
-            filetypes=(('Konfigurations Datei','*.csv'),('Alle Formate','*.*'))
+            title='Open file',
+            filetypes=(('Measurement data','*.csv'),('All formats','*.*')),
+            initialdir=os.getcwd() + os.sep + "measurement_data"
         )
 
         # if cancel is pressed, exit the process
@@ -292,10 +300,10 @@ class StartWindow(tk.Tk):
         axes.scatter3D(df['ypos'].to_numpy(), df['xpos'].to_numpy(), df['measure'].to_numpy(), color="blue")
 
         # set the labels in the plot window
-        axes.set_title("3D -Diagramm der Leistungsmesswerte")
-        axes.set_xlabel("X-Korrdinaten in mm", fontsize=6)
-        axes.set_ylabel("Y-Korrdinaten in mm", fontsize=6)
-        axes.set_zlabel("Mittelwerte pro Position in P", fontsize=6)
+        axes.set_title("3D-Diagram of the measured values")
+        axes.set_xlabel("X-Coordinates in mm", fontsize=6)
+        axes.set_ylabel("Y-Coordinates in mm", fontsize=6)
+        axes.set_zlabel("Average of measured Power per Position in P", fontsize=6)
 
         # set the icon of the plot
         current_fig_manager = plt.get_current_fig_manager()
