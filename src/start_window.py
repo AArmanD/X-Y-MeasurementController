@@ -303,7 +303,7 @@ class StartWindow(tk.Tk):
         axes.set_title("3D-Diagram of the measured values")
         axes.set_xlabel("X-Coordinates in mm", fontsize=6)
         axes.set_ylabel("Y-Coordinates in mm", fontsize=6)
-        axes.set_zlabel("Average of measured Power per Position in P", fontsize=6)
+        axes.set_zlabel("Average of measured Power per Position in W", fontsize=6)
 
         # set the icon of the plot
         current_fig_manager = plt.get_current_fig_manager()
