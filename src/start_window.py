@@ -149,7 +149,7 @@ class StartWindow(tk.Tk):
 
         output_label_9 = tk.Label(
             self,
-            text="Wait time before each measurement in mm",
+            text="Wait time before each measurement in s",
             font=("Arial", 10),
         )
         output_label_9.grid(column=0, row=9, sticky="w")
