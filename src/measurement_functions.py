@@ -39,7 +39,7 @@ def control_xy_table(progress_window, **measurement_configuration):
     measurements = np.zeros(quantity_of_y_values * quantity_of_x_values, dtype=float)
 
     # make calculations for progress bar step size
-    step_size = 100 / (quantity_of_x_values*quantity_of_y_values * measurement_configuration["number_of_measurement_runs"])
+    step_size = 100 / (quantity_of_x_values * quantity_of_y_values * measurement_configuration["number_of_measurement_runs"])
     progress = 0
 
     try:
