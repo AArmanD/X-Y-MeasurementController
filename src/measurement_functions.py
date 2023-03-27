@@ -11,7 +11,6 @@ import numpy as np
 import math
 import logging
 import pandas as pd
-import time
 
 # remove handlers from apis, so everything is logged by the one defined logger
 PILogger.handlers = []
@@ -87,33 +86,11 @@ def control_xy_table(progress_window, **measurement_configuration):
                 # reset of the y and x axis to start point
                 device_1.MOV(1, measurement_configuration["y_start_value"])
                 
-                # wait a little, so the request is correctly received
-                time.sleep(0.1)
-
-                # check for error messages
-                error_message_1 = device_1.read('ERR?')
-                error_message_2 = device_2.read('ERR?')
-                check_error_messages(error_message_1, error_message_2)
-                
                 pitools.waitontarget(device_1, axes=1)
 
-                # wait a little, so the response is correctly received
-                time.sleep(0.1)
-
                 device_2.MOV(1, measurement_configuration["x_start_value"])
-                
-                # wait a little, so the response is correctly received
-                time.sleep(0.1)
-
-                # check for error messages
-                error_message_1 = device_1.read('ERR?')
-                error_message_2 = device_2.read('ERR?')
-                check_error_messages(error_message_1, error_message_2)
 
                 pitools.waitontarget(device_2, axes=1)
-                
-                # wait a little, so the response is correctly received
-                time.sleep(0.1)
 
                 # wait so the table doesnt shake anymore
                 progress_window.get_thread_flag().wait(timeout=measurement_configuration["wait_time"])
@@ -158,18 +135,7 @@ def control_xy_table(progress_window, **measurement_configuration):
                             # Move to next X Meassurepoint
                             device_2.MOV(1, next_x_position)
                             
-                            # wait a little, so the response is correctly received
-                            time.sleep(0.1)
-
-                            # check for error messages
-                            error_message_1 = device_1.read('ERR?')
-                            error_message_2 = device_2.read('ERR?')
-                            check_error_messages(error_message_1, error_message_2)
-                            
                             pitools.waitontarget(device_2, axes=1)
-                            
-                            # wait a little, so the response is correctly received
-                            time.sleep(0.1)
 
                             # timer to wait so the table doesnt shake anymore
                             progress_window.get_thread_flag().wait(timeout=measurement_configuration["wait_time"])       
@@ -187,9 +153,6 @@ def control_xy_table(progress_window, **measurement_configuration):
         
                         # Move to next Y Meassurepoint
                         device_1.MOV(1, next_y_position)
-                        
-                        # wait a little, so the response is correctly received
-                        time.sleep(0.1)
 
                         # check for error messages
                         error_message_1 = device_1.read('ERR?')
@@ -197,25 +160,11 @@ def control_xy_table(progress_window, **measurement_configuration):
                         check_error_messages(error_message_1, error_message_2)
                         
                         pitools.waitontarget(device_1, axes=1)
-                        
-                        # wait a little, so the response is correctly received
-                        time.sleep(0.1)
 
                     # Reset to "beginning of line" for next measurement
                     device_2.MOV(1, measurement_configuration["x_start_value"])
-
-                    # wait a little, so the response is correctly received
-                    time.sleep(0.1)
-
-                    # check for error messages
-                    error_message_1 = device_1.read('ERR?')
-                    error_message_2 = device_2.read('ERR?')
-                    check_error_messages(error_message_1, error_message_2)
                     
                     pitools.waitontarget(device_2, axes=1)
-                    
-                    # wait a little, so the response is correctly received
-                    time.sleep(0.1)
                     
                     # timer to wait so the table doesnt shake anymore
                     progress_window.get_thread_flag().wait(timeout=measurement_configuration["wait_time"])      
@@ -265,32 +214,3 @@ def make_measurement(**measurement_configuration):
     measured_power_value = np.mean(measurement_configuration["conversion_factor"] * voltage_measurement_values)
 
     return measured_power_value
-
-
-def check_error_messages(error_message_1, error_message_2):
-    """Does review the asked error messages, if there is one except communication error, throw exception
-
-    Args:
-        error_message_1 (Bytes): Error message of first controller
-        error_message_2 (Bytes): Error message of second controller
-
-    Raises:
-        Exception: Is raised when an error code is discovered
-
-    Returns:
-        bool: Whether there was error message -1004 recognized, so it can be resetted
-    """
-
-    if(error_message_1 != '0\n'):
-        if error_message_1 == '-1004\n':
-            return
-        else:
-            raise Exception("An error with controller 1 occured: " + error_message_1)
-
-    if(error_message_2 != '0\n'):
-        if error_message_2 == '-1004\n':
-            return
-        else:
-            raise Exception("An error with controller 2 occured: " + error_message_2)
-
-    return
