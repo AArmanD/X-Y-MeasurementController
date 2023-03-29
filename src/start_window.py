@@ -193,7 +193,7 @@ class StartWindow(tk.Tk):
 
     def _read_configuration(self):
         """This function reads in the entered configuration from the input fields into a dictionary which then is returned
-
+        
         Returns:
             Dict: Dictionary with read in measurement configuration data
         """
@@ -205,17 +205,50 @@ class StartWindow(tk.Tk):
             measurement_configuration["number_of_measurement_runs"] = int(self.input_fields["number_of_measurement_runs"].get())
             measurement_configuration["number_of_measurements_in_one_position"] = int(self.input_fields["number_of_measurements_in_one_position"].get())
             measurement_configuration["x_start_value"] = int(self.input_fields["x_start_value"].get())
-            measurement_configuration["y_start_value"] = int(self.input_fields["y_start_value"].get())
             measurement_configuration["x_end_value"] = int(self.input_fields["x_end_value"].get())
+            measurement_configuration["y_start_value"] = int(self.input_fields["y_start_value"].get())
             measurement_configuration["y_end_value"] = int(self.input_fields["y_end_value"].get())
             measurement_configuration["delta_x_value"] = float(self.input_fields["delta_x_value"].get())
             measurement_configuration["delta_y_value"] = float(self.input_fields["delta_y_value"].get())
             measurement_configuration["wait_time"] = float(self.input_fields["wait_time"].get())
 
         except ValueError:
-            messagebox.showerror("Title", "Error in reading in configuration")
+            messagebox.showerror("Error", "Error in reading in configuration")
+            return None
         
-        # todo auf Wertebereiche prüfen
+        # check whether values are in correct range
+        if(not(measurement_configuration["x_start_value"] >= 0) or not(measurement_configuration["x_start_value"] <= 52)):
+            messagebox.showerror("Error", "Error: x start value " + str(measurement_configuration["x_start_value"]) + " not in a valid range")
+            return None
+        
+        if(not(measurement_configuration["x_end_value"] >= 0) or not(measurement_configuration["x_end_value"] <= 52)):
+            messagebox.showerror("Error", "Error: x end value " + str(measurement_configuration["x_end_value"]) + " not in a valid range")
+            return None
+
+        if(not(measurement_configuration["y_start_value"] >= 0) or not(measurement_configuration["y_start_value"] <= 52)):
+            messagebox.showerror("Error", "Error: y start value " + str(measurement_configuration["y_start_value"]) + " not in a valid range")
+            return None
+
+        if(not(measurement_configuration["y_end_value"] >= 0) or not(measurement_configuration["y_end_value"] <= 52)):
+            messagebox.showerror("Error", "Error: y end value " + str(measurement_configuration["y_end_value"]) + " not in a valid range")
+            return None
+
+        if((measurement_configuration["delta_x_value"] <= 0.005) or ((measurement_configuration["x_end_value"] - measurement_configuration["x_start_value"]) < measurement_configuration["delta_x_value"])):
+            messagebox.showerror("Error", "Error: delta x value " + str(measurement_configuration["delta_x_value"]) + " not in a valid range")
+            return None
+        
+        if((measurement_configuration["delta_y_value"] <= 0.005) or ((measurement_configuration["y_end_value"] - measurement_configuration["y_start_value"]) < measurement_configuration["delta_y_value"])):
+            messagebox.showerror("Error", "Error: delta y value " + str(measurement_configuration["delta_y_value"]) + " not in a valid range")
+            return None
+
+        # check whether start value is greater than end value
+        if(not(measurement_configuration["x_end_value"] > measurement_configuration["x_start_value"])):
+            messagebox.showerror("Error", "Error: x start value " + str(measurement_configuration["x_start_value"]) + " is greater than or equal to x end value")
+            return None
+
+        if(not(measurement_configuration["y_end_value"] > measurement_configuration["y_start_value"])):
+            messagebox.showerror("Error", "Error: y start value " + str(measurement_configuration["y_start_value"]) + " is greater than or equal to y end value")
+            return None
 
         return measurement_configuration
 

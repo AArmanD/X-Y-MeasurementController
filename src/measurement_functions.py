@@ -39,7 +39,7 @@ def control_xy_table(progress_window, **measurement_configuration):
     measurements = np.zeros(quantity_of_y_values * quantity_of_x_values, dtype=float)
 
     # make calculations for progress bar step size
-    step_size = 100/(quantity_of_x_values*quantity_of_y_values*measurement_configuration["number_of_measurement_runs"])
+    step_size = 100 / (quantity_of_x_values*quantity_of_y_values*measurement_configuration["number_of_measurement_runs"])
     progress = 0
 
     try:
@@ -74,10 +74,6 @@ def control_xy_table(progress_window, **measurement_configuration):
             _logger.info('Min x-axis 2:', device_2.qTMN())
             _logger.info('Max x-axis 2:', device_2.qTMX())
 
-            # Set the error checking to false
-            device_1.errcheck = False
-            device_2.errcheck = False
-
             # run the ammount of configured measuremnts
             for i in range(measurement_configuration["number_of_measurement_runs"]): 
                 
@@ -86,10 +82,13 @@ def control_xy_table(progress_window, **measurement_configuration):
                 # reset of the y and x axis to start point
                 device_1.MOV(1, measurement_configuration["y_start_value"])
                 
+                # wait until y axis is at correct position
                 pitools.waitontarget(device_1, axes=1)
 
+                # reset the x axis to start point
                 device_2.MOV(1, measurement_configuration["x_start_value"])
 
+                # wait until x axis is at correct position
                 pitools.waitontarget(device_2, axes=1)
 
                 # wait so the table doesnt shake anymore
@@ -108,18 +107,19 @@ def control_xy_table(progress_window, **measurement_configuration):
                         current_y_position = device_1.qPOS(1)[1]
                         current_x_position = device_2.qPOS(1)[1]
                         
-                        # Measurement save to array
+                        # save measured value, x and y position
                         measurements[measurement_counter] = make_measurement(**measurement_configuration)
                         x_position_values[measurement_counter] = current_x_position 
                         y_position_values[measurement_counter] = current_y_position
                         
                         _logger.info('Actual Data: x-pos: {:.2f} y-pos: {:.2f} reading: {:.2f}'.format(current_x_position, current_y_position, measurements[measurement_counter]))
 
+                        # increment meausrement counter
                         measurement_counter = measurement_counter + 1
 
+                        # exit when thread is set to be stopped
                         if(progress_window.get_thread_flag().is_set()):
 
-                            # todo check whether that works
                             _logger.info('Close daisy chain connection')
                             device_2.CloseDaisyChain()
                             device_1.CloseDaisyChain()
@@ -128,13 +128,14 @@ def control_xy_table(progress_window, **measurement_configuration):
                         # as long as not last measurement
                         if current_x_step < quantity_of_x_values:
                             
-                            # this instead of using currentposition avoids error propagation
+                            # this instead of using current position avoids error propagation
                             delta_to_start = (current_x_step + 1) * measurement_configuration["delta_x_value"]
                             next_x_position = measurement_configuration["x_start_value"] + delta_to_start
 
-                            # Move to next X Meassurepoint
+                            # move to next x measurepoint
                             device_2.MOV(1, next_x_position)
                             
+                            # wait until x axis is at correct position
                             pitools.waitontarget(device_2, axes=1)
 
                             # timer to wait so the table doesnt shake anymore
@@ -153,17 +154,14 @@ def control_xy_table(progress_window, **measurement_configuration):
         
                         # Move to next Y Meassurepoint
                         device_1.MOV(1, next_y_position)
-
-                        # check for error messages
-                        error_message_1 = device_1.read('ERR?')
-                        error_message_2 = device_2.read('ERR?')
-                        check_error_messages(error_message_1, error_message_2)
                         
+                        # wait until y axis is at correct position
                         pitools.waitontarget(device_1, axes=1)
 
                     # Reset to "beginning of line" for next measurement
                     device_2.MOV(1, measurement_configuration["x_start_value"])
                     
+                    # wait until y axis is at correct position
                     pitools.waitontarget(device_2, axes=1)
                     
                     # timer to wait so the table doesnt shake anymore
